@@ -21,11 +21,11 @@
     },
     "catalog": {
       "type": "application",
-      "root": "apps/catalog",
+      "root": "apps/catalogs",
       "entryFile": "main",
-      "sourceRoot": "apps/catalog/src",
+      "sourceRoot": "apps/catalogs/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/catalog/tsconfig.app.json"
+        "tsConfigPath": "apps/catalogs/tsconfig.app.json"
       }
     },
     "authorization": {
@@ -35,6 +35,15 @@
       "sourceRoot": "apps/authorization/src",
       "compilerOptions": {
         "tsConfigPath": "apps/authorization/tsconfig.app.json"
+      }
+    },
+    "common": {
+      "type": "library",
+      "root": "libs/common",
+      "entryFile": "index",
+      "sourceRoot": "libs/common/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
     }
   }

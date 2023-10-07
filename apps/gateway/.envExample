@@ -1,0 +1,10 @@
+#-----GATEWAY-----
+#APPLICATION
+PORT=3000
+
+#MICROSERVICES
+AUTH_NAME="authorization"
+AUTH_URL=""
+
+CATALOGS_NAME="catalog"
+CATALOGS_URL=""
