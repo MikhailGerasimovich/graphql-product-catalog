@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+
+import { CoreModule } from './core/core.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { CoreModule } from './core/core.module.';
-
-const envFilePath = './apps/authorization/.env';
+const envFilePath = './apps/catalogs/.env';
 
 const DefinitionConfigModule = ConfigModule.forRoot({
   envFilePath: envFilePath,
@@ -38,4 +38,4 @@ const DefinitionTypeOrmModule = TypeOrmModule.forRootAsync({
 @Module({
   imports: [DefinitionConfigModule, DefinitionGraphQLModule, DefinitionTypeOrmModule, CoreModule],
 })
-export class AuthorizationModule {}
+export class CatalogsModule {}
