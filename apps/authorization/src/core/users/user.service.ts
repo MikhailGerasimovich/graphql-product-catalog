@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { likeFilter } from '@app/common';
+import { Role, likeFilter } from '@app/common';
 
 import { User } from './entities';
-import { FindUserInput } from './dto';
+import { CreateUserInput, FindUserInput } from './dto';
 
 @Injectable()
 export class UserService {
@@ -23,7 +23,21 @@ export class UserService {
   }
 
   async findOne(id: number): Promise<User> {
-    const product = await this.userRepo.findOne({ where: { id } });
-    return product;
+    const user = await this.userRepo.findOne({ where: { id } });
+    return user;
+  }
+
+  async findOneByEmail(email: string): Promise<User> {
+    const user = await this.userRepo.findOne({ where: { email } });
+    return user;
+  }
+
+  async create(createUserInput: CreateUserInput): Promise<User> {
+    const userEntity = this.userRepo.create({
+      ...createUserInput,
+      role: Role.USER,
+    });
+    const savedUser = await this.userRepo.save(userEntity);
+    return savedUser;
   }
 }

@@ -5,7 +5,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 
 const envFilePath = './apps/gateway/.env';
-
 const DefinitionConfigModule = ConfigModule.forRoot({
   envFilePath: envFilePath,
 });
