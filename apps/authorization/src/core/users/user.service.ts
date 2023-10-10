@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { Role, likeFilter } from '@app/common';
 
 import { User } from './entities';
-import { CreateUserInput, FindUserInput } from './dto';
+import { CreateUserInput, FindUserInput, UpdateUserInput } from './dto';
 
 @Injectable()
 export class UserService {
@@ -39,5 +39,16 @@ export class UserService {
     });
     const savedUser = await this.userRepo.save(userEntity);
     return savedUser;
+  }
+
+  async updateUser(id: number, updateUserInput: UpdateUserInput): Promise<User> {
+    const existingUser = await this.findOne(id);
+    const userEntity = this.userRepo.create(updateUserInput);
+
+    const updatedUser = await this.userRepo.save({
+      ...existingUser,
+      ...userEntity,
+    });
+    return updatedUser;
   }
 }

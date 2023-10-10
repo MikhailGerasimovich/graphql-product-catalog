@@ -12,6 +12,7 @@ import { CoreModule } from './core/core.module.';
 const envFilePath = './apps/authorization/.env';
 const DefinitionConfigModule = ConfigModule.forRoot({
   envFilePath: envFilePath,
+  isGlobal: true,
 });
 
 const DefinitionGraphQLModule = GraphQLModule.forRoot<ApolloFederationDriverConfig>({
