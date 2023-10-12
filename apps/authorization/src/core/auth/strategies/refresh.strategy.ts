@@ -4,10 +4,10 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
-import { Payload } from '../types/';
+import { Payload } from '@app/common';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class RefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
   constructor(private readonly config: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
@@ -15,8 +15,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
           return request?.headers.authorization;
         },
       ]),
-      ignoreExpiration: false,
-      secretOrKey: config.get('ACCESS_SECRET'),
+      ignoreExpiration: true,
+      secretOrKey: config.get('REFRESH_SECRET'),
     });
   }
 

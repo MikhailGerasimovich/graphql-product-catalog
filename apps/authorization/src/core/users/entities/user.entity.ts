@@ -1,6 +1,8 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+import { Token } from './token.entity';
 
 @ObjectType()
 @Entity({ name: 'users', synchronize: true })
@@ -28,4 +30,7 @@ export class User extends BaseEntity {
   @Field()
   @Column({ type: 'text' })
   role: string;
+
+  @OneToMany(() => Token, (token: Token) => token.user)
+  tokens: Token[];
 }

@@ -7,7 +7,8 @@ import { User } from '../users/entities';
 import { AuthService } from './auth.service';
 import { ChangePasswordInput, SignInInput, SignUpInput } from './dto';
 import { JwtResponse } from './response';
-import { LocalAuthGuard } from './guards';
+import { LocalAuthGuard, RefreshJwtsGuard } from './guards';
+import { GetToken } from './decorators';
 
 @Resolver(() => JwtResponse)
 export class AuthResolver {
@@ -34,5 +35,29 @@ export class AuthResolver {
   ): Promise<JwtResponse> {
     const jwts = await this.authService.changePassword(payload, input);
     return jwts;
+  }
+
+  @UseGuards(RefreshJwtsGuard)
+  @Mutation(() => Boolean)
+  async logout(@GetPayload() payload: Payload, @GetToken() refreshToken: string): Promise<boolean> {
+    await this.authService.logout(payload, refreshToken);
+    return true;
+  }
+
+  @UseGuards(RefreshJwtsGuard)
+  @Mutation(() => JwtResponse)
+  async refreshTokens(
+    @GetPayload() payload: Payload,
+    @GetToken() refreshToken: string,
+  ): Promise<JwtResponse> {
+    const jwts = await this.authService.refreshTokens(payload, refreshToken);
+    return jwts;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Mutation(() => Boolean)
+  async logoutFromAllDevices(@GetPayload() payload: Payload): Promise<boolean> {
+    await this.authService.logoutFromAllDevices(payload);
+    return true;
   }
 }
