@@ -1,7 +1,8 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, UseInterceptors } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
 
-import { GetPayload, JwtAuthGuard, Payload } from '@app/common';
+import { GetPayload, GetTransaction, JwtAuthGuard, Payload, TransactionInterceptor } from '@app/common';
 
 import { User } from '../users/entities';
 import { AuthService } from './auth.service';
@@ -14,9 +15,10 @@ import { GetToken } from './decorators';
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
+  @UseInterceptors(TransactionInterceptor)
   @Mutation(() => JwtResponse)
-  async signUp(@Args('input') input: SignUpInput): Promise<JwtResponse> {
-    const jwts = await this.authService.signUp(input);
+  async signUp(@Args('input') input: SignUpInput, @GetTransaction() t: EntityManager): Promise<JwtResponse> {
+    const jwts = await this.authService.signUp(input, t);
     return jwts;
   }
 
@@ -27,13 +29,15 @@ export class AuthResolver {
     return jwts;
   }
 
+  @UseInterceptors(TransactionInterceptor)
   @UseGuards(JwtAuthGuard)
   @Mutation(() => JwtResponse)
   async changePassword(
     @Args('input') input: ChangePasswordInput,
     @GetPayload() payload: Payload,
+    @GetTransaction() t: EntityManager,
   ): Promise<JwtResponse> {
-    const jwts = await this.authService.changePassword(payload, input);
+    const jwts = await this.authService.changePassword(payload, input, t);
     return jwts;
   }
 

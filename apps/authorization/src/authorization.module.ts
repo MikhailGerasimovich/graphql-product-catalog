@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AllExceptionFilter } from '@app/common';
 
 import { CoreModule } from './core/core.module.';
+import { ScheduleModule } from '@nestjs/schedule';
 
 const envFilePath = './apps/authorization/.env';
 const DefinitionConfigModule = ConfigModule.forRoot({
@@ -39,8 +40,16 @@ const DefinitionTypeOrmModule = TypeOrmModule.forRootAsync({
   inject: [ConfigService],
 });
 
+const DefinitionScheduleModule = ScheduleModule.forRoot();
+
 @Module({
-  imports: [DefinitionConfigModule, DefinitionGraphQLModule, DefinitionTypeOrmModule, CoreModule],
+  imports: [
+    DefinitionConfigModule,
+    DefinitionGraphQLModule,
+    DefinitionTypeOrmModule,
+    DefinitionScheduleModule,
+    CoreModule,
+  ],
   providers: [
     {
       provide: APP_FILTER,

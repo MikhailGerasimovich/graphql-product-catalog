@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
 import { compare, genSalt, hash } from 'bcrypt';
 
 import { Payload } from '@app/common';
@@ -25,8 +26,8 @@ export class AuthService {
     throw new UnauthorizedException('Incorrect login and/or password entered');
   }
 
-  async signUp(signUpInput: SignUpInput): Promise<JwtResponse> {
-    const existiongUser = await this.userSerivce.findOneByEmail(signUpInput.email);
+  async signUp(signUpInput: SignUpInput, t: EntityManager): Promise<JwtResponse> {
+    const existiongUser = await this.userSerivce.findOneByEmail(signUpInput.email, t);
     if (existiongUser) {
       throw new BadRequestException('User with this email already exists');
     }
@@ -34,10 +35,10 @@ export class AuthService {
     const passwordSalt = await genSalt();
     const hashPassword = await hash(signUpInput.password, passwordSalt);
     const createUserinput = { ...signUpInput, password: hashPassword, passwordSalt };
-    const user = await this.userSerivce.create(createUserinput);
+    const user = await this.userSerivce.create(createUserinput, t);
 
     const jwts = await this.generateJwts(user.id, user.role);
-    await this.userSerivce.saveUserToken(user.id, jwts.refreshToken);
+    await this.userSerivce.saveUserToken(user.id, jwts.refreshToken, t);
 
     return jwts;
   }
@@ -49,8 +50,8 @@ export class AuthService {
     return jwts;
   }
 
-  async changePassword(payload: Payload, input: ChangePasswordInput): Promise<JwtResponse> {
-    const existiongUser = await this.userSerivce.findOne(payload.sub);
+  async changePassword(payload: Payload, input: ChangePasswordInput, t: EntityManager): Promise<JwtResponse> {
+    const existiongUser = await this.userSerivce.findOne(payload.sub, t);
     if (!existiongUser) {
       throw new BadRequestException('User does not exist');
     }
@@ -68,12 +69,12 @@ export class AuthService {
     const passwordSalt = await genSalt();
     const hashPassword = await hash(newPassword, passwordSalt);
     const updateUserInput = { password: hashPassword, passwordSalt };
-    const user = await this.userSerivce.updateUser(existiongUser.id, updateUserInput);
+    const user = await this.userSerivce.updateUser(existiongUser.id, updateUserInput, t);
 
-    await this.userSerivce.deleteAllUserTokens(user.id);
+    await this.userSerivce.deleteAllUserTokens(user.id, t);
 
     const jwts = await this.generateJwts(user.id, user.role);
-    await this.userSerivce.saveUserToken(user.id, jwts.refreshToken);
+    await this.userSerivce.saveUserToken(user.id, jwts.refreshToken, t);
 
     return jwts;
   }
