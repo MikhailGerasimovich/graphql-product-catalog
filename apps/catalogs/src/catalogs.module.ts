@@ -1,15 +1,18 @@
 import { Module } from '@nestjs/common';
+import { APP_FILTER } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
-import { CoreModule } from './core/core.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-const envFilePath = './apps/catalogs/.env';
+import { AllExceptionFilter } from '@app/common';
 
+import { CoreModule } from './core/core.module';
+
+const envFilePath = './apps/catalogs/.env';
 const DefinitionConfigModule = ConfigModule.forRoot({
   envFilePath: envFilePath,
+  isGlobal: true,
 });
 
 const DefinitionGraphQLModule = GraphQLModule.forRoot<ApolloFederationDriverConfig>({
@@ -37,5 +40,11 @@ const DefinitionTypeOrmModule = TypeOrmModule.forRootAsync({
 
 @Module({
   imports: [DefinitionConfigModule, DefinitionGraphQLModule, DefinitionTypeOrmModule, CoreModule],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionFilter,
+    },
+  ],
 })
 export class CatalogsModule {}

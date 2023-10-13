@@ -1,20 +1,27 @@
-import { IntrospectAndCompose } from '@apollo/gateway';
+import { IntrospectAndCompose, RemoteGraphQLDataSource } from '@apollo/gateway';
 import { Module } from '@nestjs/common';
+import { APP_FILTER } from '@nestjs/core';
 import { ApolloGatewayDriver, ApolloGatewayDriverConfig } from '@nestjs/apollo';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 
-const envFilePath = './apps/gateway/.env';
+import { AllExceptionFilter } from '@app/common';
 
+import { handleAuthContext } from './context/';
+
+const envFilePath = './apps/gateway/.env';
 const DefinitionConfigModule = ConfigModule.forRoot({
   envFilePath: envFilePath,
+  isGlobal: true,
 });
 
 const DefinitionGraphQLModule = GraphQLModule.forRootAsync<ApolloGatewayDriverConfig>({
   imports: [ConfigModule],
   driver: ApolloGatewayDriver,
   useFactory: (config: ConfigService) => ({
-    server: {},
+    server: {
+      context: handleAuthContext,
+    },
     gateway: {
       supergraphSdl: new IntrospectAndCompose({
         subgraphHealthCheck: true,
@@ -29,6 +36,14 @@ const DefinitionGraphQLModule = GraphQLModule.forRootAsync<ApolloGatewayDriverCo
           },
         ],
       }),
+      buildService({ url }) {
+        return new RemoteGraphQLDataSource({
+          url,
+          willSendRequest({ request, context }) {
+            request.http.headers.set('authorization', context.authorization);
+          },
+        });
+      },
     },
   }),
   inject: [ConfigService],
@@ -36,5 +51,11 @@ const DefinitionGraphQLModule = GraphQLModule.forRootAsync<ApolloGatewayDriverCo
 
 @Module({
   imports: [DefinitionConfigModule, DefinitionGraphQLModule],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionFilter,
+    },
+  ],
 })
 export class GatewayModule {}
