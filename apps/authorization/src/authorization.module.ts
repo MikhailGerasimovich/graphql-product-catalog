@@ -5,16 +5,17 @@ import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/ap
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AllExceptionFilter } from '@app/common';
+import { AllExceptionFilter, getEnvironment } from '@app/common';
 
 import { CoreModule } from './core/core.module.';
 import { ScheduleModule } from '@nestjs/schedule';
 
-const envFilePath = './apps/authorization/.env';
+const envFilePath = `./apps/authorization/${getEnvironment(process.env.NODE_ENV)}`;
 const DefinitionConfigModule = ConfigModule.forRoot({
   envFilePath: envFilePath,
   isGlobal: true,
 });
+console.log(process.env.NODE_ENV);
 
 const DefinitionGraphQLModule = GraphQLModule.forRoot<ApolloFederationDriverConfig>({
   driver: ApolloFederationDriver,

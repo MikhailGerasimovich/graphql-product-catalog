@@ -5,11 +5,11 @@ import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/ap
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AllExceptionFilter } from '@app/common';
+import { AllExceptionFilter, getEnvironment } from '@app/common';
 
 import { CoreModule } from './core/core.module';
 
-const envFilePath = './apps/catalogs/.env';
+const envFilePath = `./apps/catalogs/${getEnvironment(process.env.NODE_ENV)}`;
 const DefinitionConfigModule = ConfigModule.forRoot({
   envFilePath: envFilePath,
   isGlobal: true,
