@@ -10,9 +10,7 @@ export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
   @Query(() => [User])
-  async findAllUsers(
-    @Args('input', { nullable: true }) findUserInput: FindUserInput,
-  ): Promise<User[]> {
+  async findAllUsers(@Args('input', { nullable: true }) findUserInput: FindUserInput): Promise<User[]> {
     const users = await this.userService.findAll(findUserInput);
     return users;
   }

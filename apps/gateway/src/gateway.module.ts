@@ -5,11 +5,11 @@ import { ApolloGatewayDriver, ApolloGatewayDriverConfig } from '@nestjs/apollo';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 
-import { AllExceptionFilter } from '@app/common';
+import { AllExceptionFilter, getEnvironmentFile } from '@app/common';
 
 import { handleAuthContext } from './context/';
 
-const envFilePath = './apps/gateway/.env';
+const envFilePath = `./apps/gateway/${getEnvironmentFile(process.env.NODE_ENV)}`;
 const DefinitionConfigModule = ConfigModule.forRoot({
   envFilePath: envFilePath,
   isGlobal: true,

@@ -2,11 +2,18 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
+import { WinstonModule } from 'nest-winston';
+
+import { instance } from '@app/common';
 
 import { AuthorizationModule } from './authorization.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AuthorizationModule);
+  const app = await NestFactory.create(AuthorizationModule, {
+    logger: WinstonModule.createLogger({
+      instance: instance,
+    }),
+  });
   const config = app.get(ConfigService);
 
   app.useGlobalPipes(
