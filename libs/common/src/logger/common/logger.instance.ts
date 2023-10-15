@@ -1,4 +1,5 @@
 import { createLogger, format, transports } from 'winston';
+import 'winston-daily-rotate-file';
 
 import { customFormat } from './logger.format';
 
@@ -22,13 +23,19 @@ function getLoggerOption(nodeEnv: string) {
       new transports.Console({
         level: 'silly',
       }),
-      new transports.File({
-        filename: `logs/${servicename}.error.log`,
+      new transports.DailyRotateFile({
+        filename: `logs/%DATE%-${servicename}.error.log`,
         level: 'error',
+        datePattern: 'YYYY-MM-DD',
+        zippedArchive: true,
+        maxFiles: '30d',
       }),
-      new transports.File({
-        filename: `logs/${servicename}.combine.log`,
+      new transports.DailyRotateFile({
+        filename: `logs/%DATE%-${servicename}.combine.log`,
         level: 'info',
+        datePattern: 'YYYY-MM-DD',
+        zippedArchive: true,
+        maxFiles: '30d',
       }),
     ],
   };

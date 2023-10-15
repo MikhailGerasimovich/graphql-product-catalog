@@ -5,6 +5,7 @@ import { Request } from 'express';
 import { WinstonLoggerService } from '../logger';
 
 function makeExceptionMessage(req: Request, error: any): string {
+  const exceptionmsg = `[EXCEPTION MESSAGE]: ${error.message}`;
   const user = req.user ? `[USER]: ${JSON.stringify(req.user)}` : '';
   const method = `[METHOD]: ${req.method}`;
   const url = `[URL]: ${req.baseUrl}`;
@@ -12,7 +13,7 @@ function makeExceptionMessage(req: Request, error: any): string {
   const query = `[QUERY]: ${JSON.stringify(req.body.query)}`;
   const exception = `[EXCEPTION]: ${JSON.stringify(error)}`;
 
-  return [user, method, url, headers, query, exception].join('\t');
+  return [exceptionmsg, user, method, url, headers, query, exception].join('\t');
 }
 
 @Catch()
