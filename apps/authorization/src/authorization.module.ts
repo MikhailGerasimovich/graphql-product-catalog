@@ -1,21 +1,20 @@
-import { ClassSerializerInterceptor, Module } from '@nestjs/common';
+import { ClassSerializerInterceptor, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
-import { AllExceptionFilter, getEnvironment } from '@app/common';
-
-import { CoreModule } from './core/core.module.';
 import { ScheduleModule } from '@nestjs/schedule';
 
-const envFilePath = `./apps/authorization/${getEnvironment(process.env.NODE_ENV)}`;
+import { AllExceptionFilter, LoggerMiddleware, WinstonLoggerModule, getEnvironmentFile } from '@app/common';
+
+import { CoreModule } from './core/core.module.';
+
+const envFilePath = `./apps/authorization/${getEnvironmentFile(process.env.NODE_ENV)}`;
 const DefinitionConfigModule = ConfigModule.forRoot({
   envFilePath: envFilePath,
   isGlobal: true,
 });
-console.log(process.env.NODE_ENV);
 
 const DefinitionGraphQLModule = GraphQLModule.forRoot<ApolloFederationDriverConfig>({
   driver: ApolloFederationDriver,
@@ -49,17 +48,22 @@ const DefinitionScheduleModule = ScheduleModule.forRoot();
     DefinitionGraphQLModule,
     DefinitionTypeOrmModule,
     DefinitionScheduleModule,
+    WinstonLoggerModule,
     CoreModule,
   ],
   providers: [
     {
-      provide: APP_FILTER,
+      provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
     },
     {
-      provide: APP_INTERCEPTOR,
+      provide: APP_FILTER,
       useClass: AllExceptionFilter,
     },
   ],
 })
-export class AuthorizationModule {}
+export class AuthorizationModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

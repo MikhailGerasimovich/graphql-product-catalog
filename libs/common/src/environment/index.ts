@@ -1,2 +1,2 @@
-export * from './get-environment';
+export * from './get-environment-file';
 export * from './env.constants';

@@ -1,15 +1,15 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AllExceptionFilter, getEnvironment } from '@app/common';
+import { AllExceptionFilter, LoggerMiddleware, getEnvironmentFile } from '@app/common';
 
 import { CoreModule } from './core/core.module';
 
-const envFilePath = `./apps/catalogs/${getEnvironment(process.env.NODE_ENV)}`;
+const envFilePath = `./apps/catalogs/${getEnvironmentFile(process.env.NODE_ENV)}`;
 const DefinitionConfigModule = ConfigModule.forRoot({
   envFilePath: envFilePath,
   isGlobal: true,
@@ -47,4 +47,8 @@ const DefinitionTypeOrmModule = TypeOrmModule.forRootAsync({
     },
   ],
 })
-export class CatalogsModule {}
+export class CatalogsModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

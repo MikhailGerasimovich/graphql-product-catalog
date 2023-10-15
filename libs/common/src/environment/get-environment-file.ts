@@ -1,6 +1,6 @@
 import { ENV } from './env.constants';
 
-export function getEnvironment(env: string) {
+export function getEnvironmentFile(env: string) {
   switch (env.trim()) {
     case ENV.DEV:
       return '.env';
