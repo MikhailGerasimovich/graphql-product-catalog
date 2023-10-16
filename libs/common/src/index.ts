@@ -5,3 +5,4 @@ export * from './interceptors';
 export * from './decorators';
 export * from './environment';
 export * from './logger';
+export * from './redis/module';
