@@ -5,7 +5,7 @@ import { ApolloGatewayDriver, ApolloGatewayDriverConfig } from '@nestjs/apollo';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 
-import { AllExceptionFilter, getEnvironmentFile } from '@app/common';
+import { AllExceptionFilter, WinstonLoggerModule, getEnvironmentFile } from '@app/common';
 
 import { handleAuthContext } from './context/';
 
@@ -50,7 +50,7 @@ const DefinitionGraphQLModule = GraphQLModule.forRootAsync<ApolloGatewayDriverCo
 });
 
 @Module({
-  imports: [DefinitionConfigModule, DefinitionGraphQLModule],
+  imports: [DefinitionConfigModule, DefinitionGraphQLModule, WinstonLoggerModule],
   providers: [
     {
       provide: APP_FILTER,

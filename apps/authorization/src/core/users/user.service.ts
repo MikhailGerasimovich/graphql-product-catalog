@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, LessThan, Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { Role, likeFilter, parseTokenExpiration } from '@app/common';
 
 import { Token, User } from './entities';
 import { CreateUserInput, FindUserInput, UpdateUserInput } from './dto';
-import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class UserService {

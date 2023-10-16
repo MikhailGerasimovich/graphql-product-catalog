@@ -14,7 +14,6 @@ const RedisOptions: CacheModuleAsyncOptions = {
         host: config.get<string>('REDIS_HOST'),
         port: config.get<number>('REDIS_PORT'),
       },
-      ttl: config.get<number>('REDIS_TTL'),
     });
     return {
       store: () => store,
