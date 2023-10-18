@@ -45,6 +45,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
+    },
+    "baskets": {
+      "type": "application",
+      "root": "apps/baskets",
+      "entryFile": "main",
+      "sourceRoot": "apps/baskets/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/baskets/tsconfig.app.json"
+      }
     }
   }
 }
