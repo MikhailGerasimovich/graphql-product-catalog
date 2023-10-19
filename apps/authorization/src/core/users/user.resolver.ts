@@ -1,4 +1,4 @@
-import { Resolver, Query, Args } from '@nestjs/graphql';
+import { Resolver, Query, Args, ResolveReference } from '@nestjs/graphql';
 import { ParseIntPipe } from '@nestjs/common';
 
 import { UserService } from './user.service';
@@ -19,5 +19,10 @@ export class UserResolver {
   async findOneUser(@Args('id', ParseIntPipe) id: number): Promise<User> {
     const user = await this.userService.findOne(id);
     return user;
+  }
+
+  @ResolveReference()
+  async resolveReference(reference: { __typename: string; id: number }): Promise<User> {
+    return await this.userService.findOne(reference.id);
   }
 }

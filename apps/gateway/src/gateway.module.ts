@@ -34,6 +34,10 @@ const DefinitionGraphQLModule = GraphQLModule.forRootAsync<ApolloGatewayDriverCo
             name: config.get<string>('CATALOGS_NAME'),
             url: config.get<string>('CATALOGS_URL'),
           },
+          {
+            name: config.get<string>('BASKETS_NAME'),
+            url: config.get<string>('BASKETS_URL'),
+          },
         ],
       }),
       buildService({ url }) {
