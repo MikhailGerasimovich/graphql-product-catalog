@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 
-import { BasketsModule } from './baskets/baskets.module';
+import { BasketModule } from './baskets/basket.module';
 
 @Module({
-  imports: [BasketsModule],
+  imports: [BasketModule],
 })
 export class CoreModule {}
