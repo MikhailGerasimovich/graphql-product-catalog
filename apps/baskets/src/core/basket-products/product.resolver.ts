@@ -1,12 +1,13 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { BasketService } from './basket.service';
+
+import { BasketProductService } from './basket-product.service';
 import { BasketProduct, Product } from './entities';
 
 @Resolver(() => Product)
 export class ProductResolver {
-  constructor(private readonly basketService: BasketService) {}
+  constructor(private readonly basketProductService: BasketProductService) {}
   @ResolveField(() => BasketProduct)
   async basketProduct(@Parent() product: Product): Promise<BasketProduct> {
-    return await this.basketService.forProduct(product.id);
+    return await this.basketProductService.forProduct(product.id);
   }
 }

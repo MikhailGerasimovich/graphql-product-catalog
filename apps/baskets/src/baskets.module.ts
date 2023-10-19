@@ -7,7 +7,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { getEnvironmentFile } from '@app/common';
 
 import { CoreModule } from './core/core.module';
-import { Product, User } from './core/baskets/entities';
+import { User } from './core/baskets/entities';
+import { Product } from './core/basket-products/entities';
 
 const envFilePath = `./apps/baskets/${getEnvironmentFile(process.env.NODE_ENV)}`;
 const DefinitionConfigModule = ConfigModule.forRoot({

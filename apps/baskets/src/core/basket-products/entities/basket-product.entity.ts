@@ -1,7 +1,6 @@
 import { Directive, Field, Float, Int, ObjectType } from '@nestjs/graphql';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-
-import { Basket } from './basket.entity';
+import { Basket } from '../../baskets/entities';
 import { Product } from './product.entity';
 
 @ObjectType()

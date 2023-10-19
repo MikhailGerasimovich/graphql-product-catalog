@@ -12,6 +12,6 @@ export class Product {
   id: number;
 
   @Field(() => BasketProduct)
-  // @Exclude()
+  @Exclude()
   basketProduct: BasketProduct;
 }
