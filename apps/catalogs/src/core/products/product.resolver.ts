@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ResolveReference } from '@nestjs/graphql';
 import { ParseIntPipe } from '@nestjs/common';
 
 import { Product } from './entities';
@@ -39,5 +39,10 @@ export class ProductResolver {
   @Mutation(() => Boolean)
   async deleteProduct(@Args('id', ParseIntPipe) id: number) {
     return await this.productService.delete(id);
+  }
+
+  @ResolveReference()
+  async resolveReference(reference: { __typename: string; id: number }): Promise<Product> {
+    return await this.productService.findOne(reference.id);
   }
 }

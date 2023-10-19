@@ -1,4 +1,4 @@
-import { Resolver, ResolveField, Parent } from '@nestjs/graphql';
+import { Resolver, ResolveField, Parent, Query } from '@nestjs/graphql';
 
 import { BasketService } from './basket.service';
 import { Basket } from './entities/basket.entity';

@@ -7,7 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { getEnvironmentFile } from '@app/common';
 
 import { CoreModule } from './core/core.module';
-import { User } from './core/baskets/entities';
+import { Product, User } from './core/baskets/entities';
 
 const envFilePath = `./apps/baskets/${getEnvironmentFile(process.env.NODE_ENV)}`;
 const DefinitionConfigModule = ConfigModule.forRoot({
@@ -21,7 +21,7 @@ const DefinitionGraphQLModule = GraphQLModule.forRoot<ApolloFederationDriverConf
     federation: 2,
   },
   buildSchemaOptions: {
-    orphanedTypes: [User],
+    orphanedTypes: [User, Product],
   },
 });
 

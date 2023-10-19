@@ -1,8 +1,11 @@
-import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
+import { Directive, Field, Float, Int, ObjectType } from '@nestjs/graphql';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+
 import { Basket } from './basket.entity';
+import { Product } from './product.entity';
 
 @ObjectType()
+@Directive('@key(fields: "id")')
 @Entity('basket_products', { synchronize: true })
 export class BasketProduct {
   @Field(() => Int)
@@ -23,4 +26,7 @@ export class BasketProduct {
 
   @ManyToOne(() => Basket, (basket: Basket) => basket.basketProducts)
   basket: Basket;
+
+  @Field(() => Product)
+  product?: Product;
 }
