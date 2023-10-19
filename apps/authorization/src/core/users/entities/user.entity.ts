@@ -1,10 +1,11 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field, Int, Directive } from '@nestjs/graphql';
 import { Exclude } from 'class-transformer';
 import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Token } from './token.entity';
 
 @ObjectType()
+@Directive('@key(fields: "id")')
 @Entity({ name: 'users', synchronize: true })
 export class User extends BaseEntity {
   @Field(() => Int)

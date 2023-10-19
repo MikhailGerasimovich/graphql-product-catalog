@@ -17,6 +17,7 @@ export class Basket {
   @Column({ type: 'real' })
   totalPrice: number;
 
+  @Field(() => [BasketProduct])
   @OneToMany(() => BasketProduct, (basketProduct: BasketProduct) => basketProduct.basket)
   basketProducts: BasketProduct[];
 }
