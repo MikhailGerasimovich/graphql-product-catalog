@@ -3,10 +3,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ProductService } from './product.service';
 import { ProductResolver } from './product.resolver';
-import { Product } from './entities';
+import { CommandProduct, QueryProduct } from './domain';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Product])],
-  providers: [ProductService, ProductResolver],
+  imports: [
+    TypeOrmModule.forFeature([CommandProduct], 'command_db'),
+    TypeOrmModule.forFeature([QueryProduct], 'query_db'),
+  ],
+  providers: [],
 })
 export class ProductModule {}
