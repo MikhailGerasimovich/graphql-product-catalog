@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AllExceptionFilter, LoggerMiddleware, WinstonLoggerModule, getEnvironmentFile } from '@app/common';
 
+import { ConnectionName } from './common';
 import { CoreModule } from './core/core.module';
 
 const envFilePath = `./apps/catalogs/${getEnvironmentFile(process.env.NODE_ENV)}`;
@@ -23,7 +24,7 @@ const DefinitionGraphQLModule = GraphQLModule.forRoot<ApolloFederationDriverConf
 });
 
 const CommandDBModule = TypeOrmModule.forRootAsync({
-  name: 'command_db',
+  name: ConnectionName.Command,
   imports: [ConfigModule],
   useFactory: (config: ConfigService) => ({
     type: 'postgres',
@@ -40,7 +41,7 @@ const CommandDBModule = TypeOrmModule.forRootAsync({
 });
 
 const QueryDBModule = TypeOrmModule.forRootAsync({
-  name: 'query_db',
+  name: ConnectionName.Query,
   imports: [ConfigModule],
   useFactory: (config: ConfigService) => ({
     type: 'postgres',

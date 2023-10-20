@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { ConnectionName } from '../../common';
 import { CommandProduct, QueryProduct } from './domain';
 import { ProductResolver } from './presentation';
 import { CommandProductRepository, QueryProductRepository } from './infrastructure';
@@ -20,8 +21,8 @@ const QueryHandlers = [FindAllProductsHandler, FindOneProductHandler];
 @Module({
   imports: [
     CqrsModule,
-    TypeOrmModule.forFeature([CommandProduct], 'command_db'),
-    TypeOrmModule.forFeature([QueryProduct], 'query_db'),
+    TypeOrmModule.forFeature([CommandProduct], ConnectionName.Command),
+    TypeOrmModule.forFeature([QueryProduct], ConnectionName.Query),
   ],
   providers: [
     CommandProductRepository,

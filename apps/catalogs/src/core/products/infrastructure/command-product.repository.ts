@@ -2,13 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
 
+import { ConnectionName } from '../../../common';
 import { CommandProduct } from '../domain';
 import { CreateProductInput, UpdateProductInput } from '../application';
 
 @Injectable()
 export class CommandProductRepository {
   private repository: Repository<CommandProduct>;
-  constructor(@InjectEntityManager('command_db') private readonly entityManager: EntityManager) {
+  constructor(@InjectEntityManager(ConnectionName.Command) private readonly entityManager: EntityManager) {
     this.repository = this.entityManager.getRepository(CommandProduct);
   }
 

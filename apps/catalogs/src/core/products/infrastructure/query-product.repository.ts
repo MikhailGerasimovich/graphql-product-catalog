@@ -4,13 +4,14 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 
 import { likeFilter } from '@app/common';
 
+import { ConnectionName } from '../../../common';
 import { QueryProduct } from '../domain';
 import { FindProductInput } from '../application';
 
 @Injectable()
 export class QueryProductRepository {
   private repository: Repository<QueryProduct>;
-  constructor(@InjectEntityManager('query_db') private readonly entityManager: EntityManager) {
+  constructor(@InjectEntityManager(ConnectionName.Query) private readonly entityManager: EntityManager) {
     this.repository = this.entityManager.getRepository(QueryProduct);
   }
 
