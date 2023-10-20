@@ -1,7 +1,8 @@
-import { ObjectType, Field, Int, Float } from '@nestjs/graphql';
+import { ObjectType, Field, Int, Float, Directive } from '@nestjs/graphql';
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @ObjectType()
+@Directive('@key(fields: "id")')
 @Entity('products', { synchronize: true })
 export class Product extends BaseEntity {
   @Field(() => Int)
