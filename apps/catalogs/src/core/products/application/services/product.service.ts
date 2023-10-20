@@ -1,20 +1,30 @@
 import { Injectable } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 
+import { CreateProductCommand, DeleteProductCommand, UpdateProductCommand } from '../commands';
+import { FindAllProductsQuery, FindOneProductQuery } from '../queries';
 import { CreateProductInput, FindProductInput, UpdateProductInput } from '../dto';
-import { CommandProduct, Product, QueryProduct } from '../../domain';
-import { CommandBus } from '@nestjs/cqrs';
-import { CreateProductCommand, DeleteProductCommand, UpdateProductCommand } from '../commands/impl';
+import { Product } from '../../domain';
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly commandBus: CommandBus) {}
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+  ) {}
 
   async findAll(findProductInput: FindProductInput): Promise<Product[]> {
-    return null;
+    const products = await this.queryBus.execute<FindAllProductsQuery, Product[]>(
+      new FindAllProductsQuery(findProductInput),
+    );
+    return products;
   }
 
-  async findOne(id: number): Promise<Product> {
-    return null;
+  async findOne(productId: number): Promise<Product> {
+    const product = await this.queryBus.execute<FindOneProductQuery, Product>(
+      new FindOneProductQuery(productId),
+    );
+    return product;
   }
 
   async create(createProductInput: CreateProductInput): Promise<Product> {

@@ -9,6 +9,7 @@ export class UpdateProductHandler implements ICommandHandler<UpdateProductComman
 
   async execute(command: UpdateProductCommand): Promise<any> {
     const { productId, updateProductInput } = command;
-    return await this.repository.update(productId, updateProductInput);
+    const product = await this.repository.update(productId, updateProductInput);
+    return product;
   }
 }

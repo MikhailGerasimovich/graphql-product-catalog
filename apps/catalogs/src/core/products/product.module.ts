@@ -4,15 +4,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { CommandProduct, QueryProduct } from './domain';
 import { ProductResolver } from './presentation';
+import { CommandProductRepository, QueryProductRepository } from './infrastructure';
 import {
   CreateProductHandler,
   DeleteProductHandler,
+  FindAllProductsHandler,
+  FindOneProductHandler,
   ProductService,
   UpdateProductHandler,
 } from './application';
-import { CommandProductRepository, QueryProductRepository } from './infrastructure';
 
 const CommandHandlers = [CreateProductHandler, UpdateProductHandler, DeleteProductHandler];
+const QueryHandlers = [FindAllProductsHandler, FindOneProductHandler];
 
 @Module({
   imports: [
@@ -24,6 +27,7 @@ const CommandHandlers = [CreateProductHandler, UpdateProductHandler, DeleteProdu
     CommandProductRepository,
     QueryProductRepository,
     ...CommandHandlers,
+    ...QueryHandlers,
     ProductService,
     ProductResolver,
   ],

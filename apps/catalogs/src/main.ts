@@ -39,8 +39,6 @@ async function bootstrap() {
   });
 
   await app.startAllMicroservices();
-  console.log(config.get<number>('PORT'));
-
   await app.listen(config.get<number>('PORT'));
 }
 bootstrap();
