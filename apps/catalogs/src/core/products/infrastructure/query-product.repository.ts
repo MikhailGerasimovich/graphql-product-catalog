@@ -5,7 +5,7 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { likeFilter } from '@app/common';
 
 import { ConnectionName } from '../../../common';
-import { QueryProduct } from '../domain';
+import { Product, QueryProduct } from '../domain';
 import { FindProductInput } from '../application';
 
 @Injectable()
@@ -29,5 +29,14 @@ export class QueryProductRepository {
   async findOne(id: number): Promise<QueryProduct> {
     const product = await this.repository.findOne({ where: { id } });
     return product;
+  }
+
+  async save(product: Product) {
+    const entity = this.repository.create(product);
+    await this.repository.save(entity);
+  }
+
+  async delete(productId: number) {
+    await this.repository.delete(productId);
   }
 }

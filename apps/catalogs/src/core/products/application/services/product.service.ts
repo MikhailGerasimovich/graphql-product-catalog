@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { CommandBus, EventBus, QueryBus } from '@nestjs/cqrs';
 
 import { CreateProductCommand, DeleteProductCommand, UpdateProductCommand } from '../commands';
 import { FindAllProductsQuery, FindOneProductQuery } from '../queries';
+import { CreateProductEvent, DeleteProductEvent, UpdateProductEvent } from '../events';
 import { CreateProductInput, FindProductInput, UpdateProductInput } from '../dto';
 import { Product } from '../../domain';
 
@@ -11,6 +12,7 @@ export class ProductService {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
+    private readonly eventBus: EventBus,
   ) {}
 
   async findAll(findProductInput: FindProductInput): Promise<Product[]> {
@@ -31,6 +33,8 @@ export class ProductService {
     const product = await this.commandBus.execute<CreateProductCommand, Product>(
       new CreateProductCommand(createProductInput),
     );
+
+    this.eventBus.publish(new CreateProductEvent(product));
     return product;
   }
 
@@ -38,6 +42,8 @@ export class ProductService {
     const product = await this.commandBus.execute<UpdateProductCommand, Product>(
       new UpdateProductCommand(productId, updateProductInput),
     );
+
+    this.eventBus.publish(new UpdateProductEvent(product));
     return product;
   }
 
@@ -45,6 +51,8 @@ export class ProductService {
     const idDelete = await this.commandBus.execute<DeleteProductCommand, boolean>(
       new DeleteProductCommand(productId),
     );
+
+    this.eventBus.publish(new DeleteProductEvent(productId));
     return idDelete;
   }
 }

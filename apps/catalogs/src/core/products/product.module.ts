@@ -12,6 +12,7 @@ import {
   FindAllProductsHandler,
   FindOneProductHandler,
   ProductService,
+  QueryProductSaga,
   UpdateProductHandler,
 } from './application';
 
@@ -29,6 +30,7 @@ const QueryHandlers = [FindAllProductsHandler, FindOneProductHandler];
     QueryProductRepository,
     ...CommandHandlers,
     ...QueryHandlers,
+    QueryProductSaga,
     ProductService,
     ProductResolver,
   ],
