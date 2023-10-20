@@ -8,7 +8,7 @@ export class DeleteProductHandler implements ICommandHandler<DeleteProductComman
   constructor(private readonly repository: CommandProductRepository) {}
 
   async execute(command: DeleteProductCommand): Promise<any> {
-    // const { productId } = command;
-    // return await this.repository.delete(productId);
+    const { productId } = command;
+    return await this.repository.delete(productId);
   }
 }

@@ -8,7 +8,7 @@ export class CreateProductHandler implements ICommandHandler<CreateProductComman
   constructor(private readonly repository: CommandProductRepository) {}
 
   async execute(command: CreateProductCommand): Promise<any> {
-    // const { createProductInput } = command;
-    // return await this.repository.create(createProductInput);
+    const { createProductInput } = command;
+    return await this.repository.create(createProductInput);
   }
 }
