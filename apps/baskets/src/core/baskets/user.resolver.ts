@@ -8,6 +8,6 @@ export class UserResolver {
   constructor(private readonly basketService: BasketService) {}
   @ResolveField(() => Basket)
   async basket(@Parent() user: User): Promise<Basket> {
-    return await this.basketService.forUser(user.id);
+    return await this.basketService.findOneByUserId(user.id);
   }
 }

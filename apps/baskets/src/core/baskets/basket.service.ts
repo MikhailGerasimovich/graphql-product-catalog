@@ -1,18 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ClientProxy } from '@nestjs/microservices';
 import { Repository } from 'typeorm';
 
-import { Payload } from '@app/common';
+import { Payload, sendMessage } from '@app/common';
 
 import { Basket } from './entities';
+import { TakeProductInput } from './dto';
+import { RmqClientName } from '../../common';
 
 @Injectable()
 export class BasketService {
-  constructor(@InjectRepository(Basket) private readonly basketRepository: Repository<Basket>) {}
+  constructor(
+    @InjectRepository(Basket) private readonly basketRepository: Repository<Basket>,
+    @Inject(RmqClientName.Catalog) private readonly client: ClientProxy,
+  ) {}
 
-  async getBasket(payload: Payload): Promise<Basket> {
-    const userId = 4;
-
+  async findOneByUserId(userId: number): Promise<Basket> {
     const basket = await this.basketRepository.findOne({
       where: { userId: userId },
       relations: ['basketProducts'],
@@ -21,7 +25,7 @@ export class BasketService {
     return basket;
   }
 
-  async takeProduct(productId: number, payload: Payload): Promise<Basket> {
+  async takeProduct(takeProductInput: TakeProductInput, payload: Payload): Promise<Basket> {
     return null;
   }
 
@@ -29,12 +33,8 @@ export class BasketService {
     return null;
   }
 
-  async forUser(userId: number): Promise<Basket> {
-    const basket = await this.basketRepository.findOne({
-      where: { userId },
-      relations: ['basketProducts'],
-    });
-
-    return basket;
+  private async sendMessageToCotalog<T>(pattern: string, data: any): Promise<T> {
+    const response = await sendMessage<T>({ client: this.client, pattern, data });
+    return response;
   }
 }
