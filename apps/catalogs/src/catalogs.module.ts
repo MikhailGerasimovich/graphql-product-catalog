@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AllExceptionFilter, LoggerMiddleware, WinstonLoggerModule, getEnvironmentFile } from '@app/common';
 
+import { ConnectionName } from './common';
 import { CoreModule } from './core/core.module';
 
 const envFilePath = `./apps/catalogs/${getEnvironmentFile(process.env.NODE_ENV)}`;
@@ -22,15 +23,33 @@ const DefinitionGraphQLModule = GraphQLModule.forRoot<ApolloFederationDriverConf
   },
 });
 
-const DefinitionTypeOrmModule = TypeOrmModule.forRootAsync({
+const CommandDBModule = TypeOrmModule.forRootAsync({
+  name: ConnectionName.Command,
   imports: [ConfigModule],
   useFactory: (config: ConfigService) => ({
     type: 'postgres',
-    host: config.get('DB_HOST'),
-    port: config.get<number>('DB_PORT'),
-    username: config.get('DB_USERNAME'),
-    password: config.get('DB_PASSWORD'),
-    database: config.get('DB_NAME'),
+    host: config.get('CDB_HOST'),
+    port: config.get<number>('CDB_PORT'),
+    username: config.get('CDB_USERNAME'),
+    password: config.get('CDB_PASSWORD'),
+    database: config.get('CDB_NAME'),
+    synchronize: true,
+    autoLoadEntities: true,
+    logging: true,
+  }),
+  inject: [ConfigService],
+});
+
+const QueryDBModule = TypeOrmModule.forRootAsync({
+  name: ConnectionName.Query,
+  imports: [ConfigModule],
+  useFactory: (config: ConfigService) => ({
+    type: 'postgres',
+    host: config.get('QDB_HOST'),
+    port: config.get<number>('QDB_PORT'),
+    username: config.get('QDB_USERNAME'),
+    password: config.get('QDB_PASSWORD'),
+    database: config.get('QDB_NAME'),
     synchronize: true,
     autoLoadEntities: true,
     logging: true,
@@ -42,7 +61,8 @@ const DefinitionTypeOrmModule = TypeOrmModule.forRootAsync({
   imports: [
     DefinitionConfigModule,
     DefinitionGraphQLModule,
-    DefinitionTypeOrmModule,
+    CommandDBModule,
+    QueryDBModule,
     WinstonLoggerModule,
     CoreModule,
   ],

@@ -9,11 +9,13 @@ import { instance } from '@app/common';
 import { CatalogsModule } from './catalogs.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(CatalogsModule, {
+  const app = await NestFactory.create(
+    CatalogsModule /*, {
     logger: WinstonModule.createLogger({
       instance: instance,
     }),
-  });
+  }*/,
+  );
   const config = app.get(ConfigService);
 
   app.useGlobalPipes(
