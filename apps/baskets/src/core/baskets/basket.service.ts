@@ -8,12 +8,14 @@ import { Pattern, Payload, RequestTakeProductInfo, ResponseTakeProductInfo, send
 import { Basket } from './entities';
 import { CreateBasketInput, TakeProductInput } from './dto';
 import { RmqClientName } from '../../common';
+import { BasketProductService } from '../basket-products/basket-product.service';
 
 @Injectable()
 export class BasketService {
   constructor(
     @InjectRepository(Basket) private readonly basketRepository: Repository<Basket>,
     @Inject(RmqClientName.Catalog) private readonly client: ClientProxy,
+    private readonly basketProductService: BasketProductService,
   ) {}
 
   async findOneByUserId(userId: number): Promise<Basket> {
@@ -32,23 +34,32 @@ export class BasketService {
       reqTakeProductInfo,
     );
 
-    const { isAvailable } = resTakeProductInfo;
+    const { isAvailable, priductQuantity, productPrice, productId } = resTakeProductInfo;
 
     if (!isAvailable) {
       throw new BadRequestException(`You can't take this product, or this quantity of the product`);
     }
 
-    const basket = await this.findBasketOrCreate(payload.sub);
-    return null;
+    const basket = await this.findByUserIdOrCreate(payload.sub);
+
+    let basketProduct = basket.basketProducts.find((bp) => bp.productId == productId);
+
+    if (!basketProduct) {
+      basketProduct = await this.basketProductService.create(basket, productId);
+      basket.basketProducts.push(basketProduct);
+    }
+
+    basketProduct.productsQuantity += priductQuantity;
+    basketProduct.productsPrice = basketProduct.productsQuantity * productPrice;
+
+    basket.totalPrice = basket.basketProducts.reduce((prev, bp) => (prev += bp.productsPrice), 0);
+
+    await this.basketProductService.save(basketProduct);
+    return await this.basketRepository.save(basket);
   }
 
   async putProduct(productId: number, payload: Payload): Promise<Basket> {
     return null;
-  }
-
-  private async sendMessageToCotalog<T>(pattern: string, data: any): Promise<T> {
-    const response = await sendMessage<T>({ client: this.client, pattern, data });
-    return response;
   }
 
   private makeRequestTakeProductInfo(takeProductInput: TakeProductInput): RequestTakeProductInfo {
@@ -58,7 +69,7 @@ export class BasketService {
     return reqTakeProductInfo;
   }
 
-  private async findBasketOrCreate(userId: number): Promise<Basket> {
+  private async findByUserIdOrCreate(userId: number): Promise<Basket> {
     const existingBasket = await this.basketRepository.findOne({
       where: { userId: userId },
       relations: ['basketProducts'],
@@ -75,5 +86,10 @@ export class BasketService {
     const basketEntity = this.basketRepository.create(createBasketInput);
     const basket = await this.basketRepository.save(basketEntity);
     return basket;
+  }
+
+  private async sendMessageToCotalog<T>(pattern: string, data: any): Promise<T> {
+    const response = await sendMessage<T>({ client: this.client, pattern, data });
+    return response;
   }
 }

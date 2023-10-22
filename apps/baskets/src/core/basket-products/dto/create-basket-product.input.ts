@@ -1,6 +1,8 @@
+import { Basket } from '../../baskets/entities';
+
 export class CreateBasketProductInput {
-  basketId: number;
+  basket: Basket;
   productId: number;
-  productPrice: number;
-  productQuantity: number;
+  productsPrice: number;
+  productsQuantity: number;
 }
