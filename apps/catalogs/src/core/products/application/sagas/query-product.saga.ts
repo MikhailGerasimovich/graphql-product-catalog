@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { QueryProductRepository } from '../../infrastructure';
 import { Saga, ofType } from '@nestjs/cqrs';
-import { Observable, map, delay } from 'rxjs';
-import { CreateProductEvent, DeleteProductEvent, UpdateProductEvent } from '../events';
+import { Observable, map } from 'rxjs';
+import { CreateProductEvent, DeleteProductEvent, TakeProductEvent, UpdateProductEvent } from '../events';
 
 @Injectable()
 export class QueryProductSaga {
@@ -37,6 +37,17 @@ export class QueryProductSaga {
       map((event) => {
         const { productId } = event;
         this.repository.delete(productId);
+      }),
+    );
+  }
+
+  @Saga()
+  takeProduct(events$: Observable<any>): Observable<void> {
+    return events$.pipe(
+      ofType(TakeProductEvent),
+      map((event) => {
+        const { product } = event;
+        this.repository.save(product);
       }),
     );
   }

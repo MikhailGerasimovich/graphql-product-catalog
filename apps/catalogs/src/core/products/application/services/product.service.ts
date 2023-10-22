@@ -1,11 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus, EventBus, QueryBus } from '@nestjs/cqrs';
 
-import { CreateProductCommand, DeleteProductCommand, UpdateProductCommand } from '../commands';
+import {
+  CreateProductCommand,
+  DeleteProductCommand,
+  TakeProductCommand,
+  UpdateProductCommand,
+} from '../commands';
 import { FindAllProductsQuery, FindOneProductQuery } from '../queries';
-import { CreateProductEvent, DeleteProductEvent, UpdateProductEvent } from '../events';
+import { CreateProductEvent, DeleteProductEvent, TakeProductEvent, UpdateProductEvent } from '../events';
 import { CreateProductInput, FindProductInput, UpdateProductInput } from '../dto';
-import { Product } from '../../domain';
+import { Product, TakeProduct } from '../../domain';
+
+import { RequestTakeProductInfo, ResponseTakeProductInfo } from '@app/common';
 
 @Injectable()
 export class ProductService {
@@ -54,5 +61,17 @@ export class ProductService {
 
     this.eventBus.publish(new DeleteProductEvent(productId));
     return idDelete;
+  }
+
+  async takeProduct(reqTakeProduct: RequestTakeProductInfo): Promise<ResponseTakeProductInfo> {
+    const res = await this.commandBus.execute<TakeProductCommand, TakeProduct>(
+      new TakeProductCommand(reqTakeProduct),
+    );
+    const { responseTakeProductInfo, updatedProduct } = res;
+
+    if (responseTakeProductInfo.isAvailable) {
+      this.eventBus.publish(new TakeProductEvent(updatedProduct));
+    }
+    return responseTakeProductInfo;
   }
 }
