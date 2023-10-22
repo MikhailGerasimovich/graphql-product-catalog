@@ -8,7 +8,7 @@ import { Basket } from './entities/basket.entity';
 import { User } from './entities';
 import { TakeProductInput } from './dto';
 
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 @Resolver(() => Basket)
 export class BasketResolver {
   constructor(private readonly basketsService: BasketService) {}
