@@ -10,7 +10,7 @@
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "set NODE_ENV=production && nest start",
     "start:dev": "set NODE_ENV=development && nest start --watch",
-    "start:docker": "set NODE_ENV=docker && nest start",
+    "start:docker": "export NODE_ENV=docker && nest start",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/apps/graphql-product-catalog/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

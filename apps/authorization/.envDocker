@@ -1,20 +1,25 @@
 #-----AUTH-----
 #APLLICATION
-PORT=3002
+PORT=3001
 
 #DATABASE
-DB_HOST="localhost"
-DB_PORT=5432
+DB_HOST="auth_db"
+DB_PORT=5434
 DB_USERNAME="postgres"
 DB_PASSWORD="957483"
 DB_NAME="auth_db"
 
 #RABBITMQ
-RMQ_URL="amqp://localhost:5672"
+RMQ_URL="amqp://rabbitmq:5672"
 RMQ_QUEUE_AUTH="auth_queue"
 
 #JWT
 ACCESS_SECRET="jwtaccesssecret"
-ACCESS_DURATION="100h"
+ACCESS_DURATION="1h"
 REFRESH_SECRET="jwtrefreshsecret"
 REFRESH_DURATION="100h"
+
+#REDIS-CACHE
+REDIS_HOST="localhost"
+REDIS_PORT=6379
+REDIS_TTL=2000
