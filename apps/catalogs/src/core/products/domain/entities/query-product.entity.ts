@@ -15,6 +15,6 @@ export class QueryProduct extends Product {
   @Column({ type: 'text' })
   currency: string;
 
-  @Column({ type: 'integer' })
-  quantity: number;
+  @Column({ type: 'boolean' })
+  inStock: boolean;
 }

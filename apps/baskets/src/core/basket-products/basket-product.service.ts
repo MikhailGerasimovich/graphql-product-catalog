@@ -26,6 +26,10 @@ export class BasketProductService {
     return await this.repository.save(basketProduct);
   }
 
+  async delete(id: number) {
+    await this.repository.delete(id);
+  }
+
   async forProduct(productId: number): Promise<BasketProduct> {
     const basketProduct = await this.repository.findOne({
       where: { productId },

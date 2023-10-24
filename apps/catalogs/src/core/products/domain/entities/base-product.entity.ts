@@ -16,6 +16,6 @@ export class Product extends BaseEntity {
   @Field()
   currency: string;
 
-  @Field(() => Int)
-  quantity: number;
+  @Field(() => Boolean)
+  inStock: boolean;
 }

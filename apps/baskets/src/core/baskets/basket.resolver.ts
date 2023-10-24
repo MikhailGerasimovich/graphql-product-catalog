@@ -6,7 +6,7 @@ import { GetPayload, JwtAuthGuard, Payload, Role, Roles } from '@app/common';
 import { BasketService } from './basket.service';
 import { Basket } from './entities/basket.entity';
 import { User } from './entities';
-import { TakeProductInput } from './dto';
+import { PutProductInput, TakeProductInput } from './dto';
 
 @UseGuards(JwtAuthGuard)
 @Resolver(() => Basket)
@@ -37,10 +37,10 @@ export class BasketResolver {
 
   @Mutation(() => Basket)
   async putProduct(
-    @Args('productId', ParseIntPipe) productId: number,
+    @Args('input') putProductInput: PutProductInput,
     @GetPayload() payload: Payload,
   ): Promise<Basket> {
-    const basket = await this.basketsService.putProduct(productId, payload);
+    const basket = await this.basketsService.putProduct(putProductInput, payload);
     return basket;
   }
 

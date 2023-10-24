@@ -64,14 +64,13 @@ export class ProductService {
   }
 
   async takeProduct(reqTakeProduct: RequestTakeProductInfo): Promise<ResponseTakeProductInfo> {
-    const res = await this.commandBus.execute<TakeProductCommand, TakeProduct>(
+    const resTakeProduct = await this.commandBus.execute<TakeProductCommand, ResponseTakeProductInfo>(
       new TakeProductCommand(reqTakeProduct),
     );
-    const { responseTakeProductInfo, updatedProduct } = res;
 
-    if (responseTakeProductInfo.isAvailable) {
-      this.eventBus.publish(new TakeProductEvent(updatedProduct));
+    if (resTakeProduct.isAvailable) {
+      this.eventBus.publish(new TakeProductEvent(resTakeProduct));
     }
-    return responseTakeProductInfo;
+    return resTakeProduct;
   }
 }

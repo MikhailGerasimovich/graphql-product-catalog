@@ -1,5 +1,5 @@
 import { Field, Float, InputType, Int } from '@nestjs/graphql';
-import { IsDefined, IsNumber, IsOptional, IsString, Length, Min } from 'class-validator';
+import { IsBoolean, IsDefined, IsNumber, IsOptional, IsString, Length, Min } from 'class-validator';
 
 @InputType()
 export class FindProductInput {
@@ -25,9 +25,8 @@ export class FindProductInput {
   currency?: string;
 
   @Field(() => Int, { nullable: true })
-  @IsNumber()
+  @IsBoolean()
   @IsOptional()
   @IsDefined()
-  @Min(0)
-  quantity?: number;
+  inStock?: boolean;
 }

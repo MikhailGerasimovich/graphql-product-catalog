@@ -46,8 +46,10 @@ export class QueryProductSaga {
     return events$.pipe(
       ofType(TakeProductEvent),
       map((event) => {
-        const { product } = event;
-        this.repository.save(product);
+        const { resTakeProduct } = event;
+        console.log(
+          `Took product with id ${resTakeProduct.productId} in the amount of ${resTakeProduct.priductQuantity}`,
+        );
       }),
     );
   }

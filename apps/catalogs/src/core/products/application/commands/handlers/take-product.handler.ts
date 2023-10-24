@@ -16,18 +16,14 @@ export class TakeProductHandler implements ICommandHandler<TakeProductCommand> {
 
     const product = await this.repository.findOne(productId);
 
-    const isAvailable = product && product.quantity > 0 && product.quantity >= productQuantity;
+    const isAvailable = product && product.inStock;
     if (!isAvailable) {
       const resTakeProduct = this.notAvailable(productId);
-      return { responseTakeProductInfo: resTakeProduct };
+      return resTakeProduct;
     }
 
     const resTakeProduct = this.available(product, productQuantity);
-
-    const newProductQuantity = product.quantity - productQuantity;
-    const updatedProduct = await this.repository.update(product.id, { quantity: newProductQuantity });
-
-    return { responseTakeProductInfo: resTakeProduct, updatedProduct };
+    return resTakeProduct;
   }
 
   available(product: CommandProduct, productQuantity: number): ResponseTakeProductInfo {
@@ -43,7 +39,7 @@ export class TakeProductHandler implements ICommandHandler<TakeProductCommand> {
     const resTakeProduct = new ResponseTakeProductInfo();
     resTakeProduct.isAvailable = false;
     resTakeProduct.priductQuantity = 0;
-    resTakeProduct.productId = 0;
+    resTakeProduct.productId = productId;
     resTakeProduct.productPrice = 0;
     return resTakeProduct;
   }

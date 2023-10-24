@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, NotFoundException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ClientProxy } from '@nestjs/microservices';
 import { Repository } from 'typeorm';
@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { Pattern, Payload, RequestTakeProductInfo, ResponseTakeProductInfo, sendMessage } from '@app/common';
 
 import { Basket } from './entities';
-import { CreateBasketInput, TakeProductInput } from './dto';
+import { CreateBasketInput, PutProductInput, TakeProductInput } from './dto';
 import { RmqClientName } from '../../common';
 import { BasketProductService } from '../basket-products/basket-product.service';
 
@@ -41,7 +41,9 @@ export class BasketService {
     }
 
     const basket = await this.findByUserIdOrCreate(payload.sub);
-
+    if (!basket.basketProducts) {
+      basket.basketProducts = [];
+    }
     let basketProduct = basket.basketProducts.find((bp) => bp.productId == productId);
 
     if (!basketProduct) {
@@ -58,8 +60,36 @@ export class BasketService {
     return await this.basketRepository.save(basket);
   }
 
-  async putProduct(productId: number, payload: Payload): Promise<Basket> {
-    return null;
+  async putProduct(putProductInput: PutProductInput, payload: Payload): Promise<Basket> {
+    const basket = await this.findOneByUserId(payload.sub);
+    if (!basket) {
+      throw new BadRequestException('The basket is missing');
+    }
+
+    if (!basket.basketProducts) {
+      basket.basketProducts = [];
+    }
+
+    const { productId, productQuantity } = putProductInput;
+
+    const basketProduct = basket.basketProducts.find((bp) => bp.productId == productId);
+    if (!basketProduct) {
+      throw new NotFoundException(`The product with this id was not found`);
+    }
+
+    if (basketProduct.productsQuantity <= productQuantity) {
+      basket.totalPrice -= basketProduct.productsPrice;
+      basket.basketProducts = basket.basketProducts.filter((bp) => bp.productId != productId);
+      await this.basketProductService.delete(basketProduct.id);
+      return await this.basketRepository.save(basket);
+    }
+
+    const putPrice = (basketProduct.productsPrice / basketProduct.productsQuantity) * productQuantity;
+    basket.totalPrice -= putPrice;
+    basketProduct.productsPrice -= putPrice;
+    basketProduct.productsQuantity -= productQuantity;
+    await this.basketProductService.save(basketProduct);
+    return await this.basketRepository.save(basket);
   }
 
   private makeRequestTakeProductInfo(takeProductInput: TakeProductInput): RequestTakeProductInfo {

@@ -1,5 +1,5 @@
-import { Product } from '../../../domain';
+import { ResponseTakeProductInfo } from '@app/common';
 
 export class TakeProductEvent {
-  constructor(public readonly product: Product) {}
+  constructor(public readonly resTakeProduct: ResponseTakeProductInfo) {}
 }
