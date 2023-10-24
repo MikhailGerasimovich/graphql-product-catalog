@@ -13,6 +13,11 @@ export class CommandProductRepository {
     this.repository = this.entityManager.getRepository(CommandProduct);
   }
 
+  async findOne(productId: number): Promise<CommandProduct> {
+    const product = await this.repository.findOne({ where: { id: productId } });
+    return product;
+  }
+
   async create(createProductInput: CreateProductInput): Promise<CommandProduct> {
     const productEntity = this.repository.create(createProductInput);
     const savedProduct = await this.repository.save(productEntity);
