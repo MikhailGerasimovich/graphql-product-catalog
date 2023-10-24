@@ -1,25 +1,46 @@
-import { BadRequestException, NotFoundException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  Inject,
+  Injectable,
+  Scope,
+  ExecutionContext,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ClientProxy } from '@nestjs/microservices';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
+import { CONTEXT } from '@nestjs/graphql';
 
-import { Pattern, Payload, RequestTakeProductInfo, ResponseTakeProductInfo, sendMessage } from '@app/common';
+import {
+  Pattern,
+  Payload,
+  RequestTakeProductInfo,
+  ResponseTakeProductInfo,
+  getTransactionFromContext,
+  sendMessage,
+} from '@app/common';
 
 import { Basket } from './entities';
 import { CreateBasketInput, PutProductInput, TakeProductInput } from './dto';
 import { RmqClientName } from '../../common';
 import { BasketProductService } from '../basket-products/basket-product.service';
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class BasketService {
+  private repository: Repository<Basket>;
+
   constructor(
     @InjectRepository(Basket) private readonly basketRepository: Repository<Basket>,
     @Inject(RmqClientName.Catalog) private readonly client: ClientProxy,
+    @Inject(CONTEXT) private readonly context: ExecutionContext,
     private readonly basketProductService: BasketProductService,
-  ) {}
+  ) {
+    const entityManager = getTransactionFromContext(context);
+    this.repository = this.getBasketRepo(entityManager);
+  }
 
   async findOneByUserId(userId: number): Promise<Basket> {
-    const basket = await this.basketRepository.findOne({
+    const basket = await this.repository.findOne({
       where: { userId: userId },
       relations: ['basketProducts'],
     });
@@ -57,7 +78,7 @@ export class BasketService {
     basket.totalPrice = basket.basketProducts.reduce((prev, bp) => (prev += bp.productsPrice), 0);
 
     await this.basketProductService.save(basketProduct);
-    return await this.basketRepository.save(basket);
+    return await this.repository.save(basket);
   }
 
   async putProduct(putProductInput: PutProductInput, payload: Payload): Promise<Basket> {
@@ -81,7 +102,7 @@ export class BasketService {
       basket.totalPrice -= basketProduct.productsPrice;
       basket.basketProducts = basket.basketProducts.filter((bp) => bp.productId != productId);
       await this.basketProductService.delete(basketProduct.id);
-      return await this.basketRepository.save(basket);
+      return await this.repository.save(basket);
     }
 
     const putPrice = (basketProduct.productsPrice / basketProduct.productsQuantity) * productQuantity;
@@ -89,7 +110,7 @@ export class BasketService {
     basketProduct.productsPrice -= putPrice;
     basketProduct.productsQuantity -= productQuantity;
     await this.basketProductService.save(basketProduct);
-    return await this.basketRepository.save(basket);
+    return await this.repository.save(basket);
   }
 
   private makeRequestTakeProductInfo(takeProductInput: TakeProductInput): RequestTakeProductInfo {
@@ -100,7 +121,7 @@ export class BasketService {
   }
 
   private async findByUserIdOrCreate(userId: number): Promise<Basket> {
-    const existingBasket = await this.basketRepository.findOne({
+    const existingBasket = await this.repository.findOne({
       where: { userId: userId },
       relations: ['basketProducts'],
     });
@@ -113,13 +134,20 @@ export class BasketService {
     createBasketInput.userId = userId;
     createBasketInput.totalPrice = 0;
 
-    const basketEntity = this.basketRepository.create(createBasketInput);
-    const basket = await this.basketRepository.save(basketEntity);
+    const basketEntity = this.repository.create(createBasketInput);
+    const basket = await this.repository.save(basketEntity);
     return basket;
   }
 
   private async sendMessageToCotalog<T>(pattern: string, data: any): Promise<T> {
     const response = await sendMessage<T>({ client: this.client, pattern, data });
     return response;
+  }
+
+  private getBasketRepo(entityManager: EntityManager): Repository<Basket> {
+    if (entityManager) {
+      return entityManager.getRepository(Basket);
+    }
+    return this.basketRepository;
   }
 }

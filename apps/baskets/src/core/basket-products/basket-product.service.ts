@@ -1,14 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { ExecutionContext, Inject, Injectable, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
+import { CONTEXT } from '@nestjs/graphql';
 
 import { BasketProduct } from './entities';
 import { CreateBasketProductInput, UpdateBasketProductInput } from './dto';
 import { Basket } from '../baskets/entities';
 
-@Injectable()
+import { getTransactionFromContext } from '@app/common';
+
+@Injectable({ scope: Scope.REQUEST })
 export class BasketProductService {
-  constructor(@InjectRepository(BasketProduct) private readonly repository: Repository<BasketProduct>) {}
+  private repository: Repository<BasketProduct>;
+
+  constructor(
+    @InjectRepository(BasketProduct) private readonly basketProductRepository: Repository<BasketProduct>,
+    @Inject(CONTEXT) private readonly context: ExecutionContext,
+  ) {
+    const entityManager = getTransactionFromContext(context);
+    this.repository = this.getBasketProductRepo(entityManager);
+  }
 
   async create(basket: Basket, productId: number): Promise<BasketProduct> {
     const createBasketProductInput = new CreateBasketProductInput();
@@ -36,5 +47,12 @@ export class BasketProductService {
     });
 
     return basketProduct;
+  }
+
+  private getBasketProductRepo(entityManager: EntityManager): Repository<BasketProduct> {
+    if (entityManager) {
+      return entityManager.getRepository(BasketProduct);
+    }
+    return this.basketProductRepository;
   }
 }

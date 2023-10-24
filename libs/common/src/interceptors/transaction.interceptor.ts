@@ -3,7 +3,7 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 import { Observable, catchError, concatMap, finalize } from 'rxjs';
 import { DataSource } from 'typeorm';
 
-export const TRANSACTION_FIELD = 'transaction';
+import { TRANSACTION_FIELD } from '../constants';
 
 @Injectable()
 export class TransactionInterceptor implements NestInterceptor {

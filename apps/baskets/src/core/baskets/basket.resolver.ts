@@ -1,7 +1,7 @@
 import { Resolver, ResolveField, Parent, Query, Mutation, Args } from '@nestjs/graphql';
-import { ParseIntPipe, UseGuards } from '@nestjs/common';
+import { UseGuards, UseInterceptors } from '@nestjs/common';
 
-import { GetPayload, JwtAuthGuard, Payload, Role, Roles } from '@app/common';
+import { GetPayload, JwtAuthGuard, Payload, Role, Roles, TransactionInterceptor } from '@app/common';
 
 import { BasketService } from './basket.service';
 import { Basket } from './entities/basket.entity';
@@ -26,6 +26,7 @@ export class BasketResolver {
     return basket;
   }
 
+  @UseInterceptors(TransactionInterceptor)
   @Mutation(() => Basket)
   async takeProduct(
     @Args('input') takeProductInput: TakeProductInput,
@@ -35,6 +36,7 @@ export class BasketResolver {
     return basket;
   }
 
+  @UseInterceptors(TransactionInterceptor)
   @Mutation(() => Basket)
   async putProduct(
     @Args('input') putProductInput: PutProductInput,

@@ -1,7 +1,7 @@
 import { ExecutionContext, createParamDecorator } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 
-import { TRANSACTION_FIELD } from '../interceptors';
+import { TRANSACTION_FIELD } from '../constants';
 
 export const GetTransaction = createParamDecorator((data: any, context: ExecutionContext) => {
   const gqlContext = GqlExecutionContext.create(context);
