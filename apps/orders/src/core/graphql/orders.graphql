@@ -3,6 +3,7 @@ type Order @key(fields: "id") {
   userId: Int!
   totalSpendMoney: Float!
   orderProducts: [OrderProduct]
+  user: User
 }
 
 type OrderProduct @key(fields: "id") {

@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, ResolveField, Parent } from '@nestjs/graphql';
 import { OrderService } from './order.service';
 import { CreatePurchaseInput } from '../classes';
 import { Order } from './entities';
@@ -20,4 +20,9 @@ export class OrderResolver {
 
   @Mutation('purchase')
   async purchase(@Args('input') createPurchaseInput: CreatePurchaseInput) {}
+
+  @ResolveField('user')
+  async user(@Parent() order: Order): Promise<any> {
+    return { __typename: 'User', id: order.userId };
+  }
 }
