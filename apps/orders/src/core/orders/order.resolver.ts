@@ -8,8 +8,9 @@ export class OrderResolver {
   constructor(private readonly orderService: OrderService) {}
 
   @Query('findUserOrder')
-  async findUserOrder(): Promise<Order> {
-    return null;
+  async findUserOrder(@Args('input') userId: number): Promise<Order> {
+    const order = await this.orderService.findOneByUserId(userId);
+    return order;
   }
 
   @Query('findOrder')

@@ -2,14 +2,24 @@ type Order @key(fields: "id") {
   id: Int!
   userId: Int!
   totalSpendMoney: Float!
-  orderProducts: [OrderProducts]
+  orderProducts: [OrderProduct]
 }
 
-type OrderProducts @key(fields: "id") {
+type OrderProduct @key(fields: "id") {
   id: Int!
   productId: Int!
   productQuantity: Int!
   purchaseDate: String!
+  product: Product
+}
+
+extend type Product @key(fields: "id") {
+  id: Int!
+  orderProduct: OrderProduct
+}
+
+extend type User @key(fields: "id") {
+  id: Int
   order: Order
 }
 
@@ -17,7 +27,7 @@ input CreatePurchaseInput {
   userId: Int!
 }
 
-type Query {
+extend type Query {
   findUserOrder(userId: Int!): Order!
   findOrder: Order!
 }

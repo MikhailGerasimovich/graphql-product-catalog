@@ -44,7 +44,6 @@ export class BasketService {
       where: { userId: userId },
       relations: ['basketProducts'],
     });
-
     return basket;
   }
 
