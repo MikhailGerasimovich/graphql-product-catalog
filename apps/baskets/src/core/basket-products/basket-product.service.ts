@@ -46,6 +46,10 @@ export class BasketProductService {
     await this.repository.delete(id);
   }
 
+  async deleteMany(ids: number[]) {
+    await this.repository.delete(ids);
+  }
+
   async forProduct(productId: number): Promise<BasketProduct> {
     const basketProduct = await this.repository.findOne({
       where: { productId },

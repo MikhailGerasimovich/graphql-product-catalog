@@ -2,11 +2,18 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { WinstonModule } from 'nest-winston';
+
+import { instance } from '@app/common';
 
 import { BasketsModule } from './baskets.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(BasketsModule);
+  const app = await NestFactory.create(BasketsModule, {
+    logger: WinstonModule.createLogger({
+      instance: instance,
+    }),
+  });
 
   const config = app.get(ConfigService);
 

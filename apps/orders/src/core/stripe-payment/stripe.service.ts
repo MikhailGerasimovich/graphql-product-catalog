@@ -15,8 +15,6 @@ export class StripeService {
   }
 
   async createCheckoutSession(purchaseInfo: ResponsePurchaseInfo) {
-    console.log('work');
-
     const session = await this.stripe.checkout.sessions.create({
       currency: purchaseInfo.currency,
       payment_method_types: ['card'],
@@ -28,15 +26,15 @@ export class StripeService {
             product_data: {
               name: product.productTitle,
             },
-            unit_amount: product.productsPrice * 100, //количество центов! => надо * 100 цену
+            unit_amount: product.productsPrice * 100,
           },
-          quantity: product.productQuantity, //количество такого товара
+          quantity: product.productQuantity,
         };
       }),
-      success_url: 'http://localhost:4000/success',
-      cancel_url: 'http://localhost:4000/fail',
+      success_url: this.config.get('SUCCESS_URL'),
+      cancel_url: this.config.get('CANCEL_URL'),
     });
 
-    return { url: session.url }; //адресс для оплаты
+    return { url: session.url };
   }
 }

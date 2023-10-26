@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { ResponsePurchaseInfo } from '@app/common';
+import { ResponsePurchaseInfo, getCurrentDateTimeString } from '@app/common';
 
 import { Order } from './entities';
 import { CreateOrderinput } from './dto';
@@ -47,7 +47,7 @@ export class OrderService {
     createOrderProductInput.order = order;
     createOrderProductInput.productId = productId;
     createOrderProductInput.productQuantity = productQuantity;
-    createOrderProductInput.purchaseDate = '26-10-2023 12:12:12';
+    createOrderProductInput.purchaseDate = getCurrentDateTimeString();
     return createOrderProductInput;
   }
 

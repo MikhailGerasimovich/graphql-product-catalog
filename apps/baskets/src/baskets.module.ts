@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { getEnvironmentFile } from '@app/common';
+import { LoggerMiddleware, getEnvironmentFile } from '@app/common';
 
 import { CoreModule } from './core/core.module';
 import { User } from './core/baskets/entities';
@@ -76,4 +76,8 @@ const DefinitionRmqClientModule = ClientsModule.registerAsync({
     CoreModule,
   ],
 })
-export class BasketsModule {}
+export class BasketsModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

@@ -30,7 +30,6 @@ extend type User @key(fields: "id") {
 
 input CreatePurchaseInput {
   basketProductId: [Int!]
-  # paymentSystem: String!
 }
 
 extend type Query {

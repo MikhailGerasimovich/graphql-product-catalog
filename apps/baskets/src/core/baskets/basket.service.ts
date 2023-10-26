@@ -125,9 +125,18 @@ export class BasketService {
 
     const basketProducts = basket.basketProducts.filter((bp) => basketProductId.includes(bp.id));
 
+    if (basketProducts.length == 0) {
+      throw new BadRequestException('More than one entity has not been selected for purchase');
+    }
+
     const resPurchaseInfo = this.createResponsePurchaseInfo(basketProducts);
 
-    //удалить купленные basketProduct
+    basket.basketProducts = basket.basketProducts.filter((bp) => !basketProductId.includes(bp.id));
+    basket.totalPrice -= resPurchaseInfo.totalPrice;
+
+    await this.basketProductService.deleteMany(basketProducts.map((bp) => bp.id));
+    await this.repository.save(basket);
+
     return resPurchaseInfo;
   }
 

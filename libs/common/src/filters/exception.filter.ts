@@ -23,7 +23,7 @@ export class AllExceptionFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     const req = host.getArgByIndex(2).req;
 
-    // this.logger.error(makeExceptionMessage(req, exception));
+    this.logger.error(makeExceptionMessage(req, exception));
 
     if (exception instanceof HttpException) {
       const status = exception.getStatus();

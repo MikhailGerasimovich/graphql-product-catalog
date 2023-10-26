@@ -1,7 +1,7 @@
 import { Resolver, Query, Args, ResolveField, Parent } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 
-import { GetPayload, JwtAuthGuard, Payload } from '@app/common';
+import { GetPayload, JwtAuthGuard, Payload, Role, Roles } from '@app/common';
 
 import { OrderService } from './order.service';
 import { Order } from './entities';
@@ -10,6 +10,8 @@ import { Order } from './entities';
 export class OrderResolver {
   constructor(private readonly orderService: OrderService) {}
 
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.ADMIN)
   @Query('findUserOrder')
   async findUserOrder(@Args('input') userId: number): Promise<Order> {
     const order = await this.orderService.findOneByUserId(userId);

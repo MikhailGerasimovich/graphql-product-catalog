@@ -22,9 +22,6 @@ export class PaymentService {
       reqPurchaseInfo,
     );
 
-    // const { paymentSystem } = createPurchaseInput;
-    //для сохранения заказов
-
     const url = await this.stripeService.createCheckoutSession(resPurchaseInfo);
     await this.orderService.create(resPurchaseInfo, payload.sub);
     return url;
