@@ -17,11 +17,14 @@ export class BasketProduct {
 
   @Field(() => Float)
   @Column({ type: 'real' })
-  productsQuantity: number;
+  productQuantity: number;
 
   @Field(() => Int)
   @Column({ type: 'integer' })
   productId: number;
+
+  @Column({ type: 'text' })
+  productTitle: string;
 
   @ManyToOne(() => Basket, (basket: Basket) => basket.basketProducts)
   basket: Basket;

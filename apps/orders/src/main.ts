@@ -20,7 +20,7 @@ async function bootstrap() {
     transport: Transport.RMQ,
     options: {
       urls: [config.get<string>('RMQ_URL')],
-      queue: config.get<string>('RMQ_QUEUE_BASKETS'),
+      queue: config.get<string>('RMQ_QUEUE_ORDERS'),
       noAck: true,
       persistent: true,
       queueOptions: {

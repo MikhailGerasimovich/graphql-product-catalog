@@ -9,6 +9,6 @@ export class User {
   @Directive('@external')
   id: number;
 
-  @Field(() => Basket)
+  @Field(() => Basket, { nullable: true })
   basket?: Basket;
 }

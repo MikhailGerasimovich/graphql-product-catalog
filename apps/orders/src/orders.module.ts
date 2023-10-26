@@ -7,6 +7,8 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo';
 import { CoreModule } from './core/core.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { RmqClientName } from './common';
 
 const envFilePath = `./apps/orders/${getEnvironmentFile(process.env.NODE_ENV)}`;
 const DefinitionConfigModule = ConfigModule.forRoot({
@@ -35,8 +37,37 @@ const DefinitionTypeOrmModule = TypeOrmModule.forRootAsync({
   }),
 });
 
+const DefinitionRmqClientModule = ClientsModule.registerAsync({
+  isGlobal: true,
+  clients: [
+    {
+      name: RmqClientName.Basket,
+      inject: [ConfigService],
+      imports: [ConfigModule],
+      useFactory: async (config: ConfigService) => ({
+        transport: Transport.RMQ,
+        options: {
+          urls: [config.get<string>('RMQ_URL')],
+          queue: config.get<string>('RMQ_QUEUE_BASKETS'),
+          queueOptions: {
+            durable: true,
+          },
+          noAck: true,
+          persistent: true,
+        },
+      }),
+    },
+  ],
+});
+
 @Module({
-  imports: [DefinitionConfigModule, DefinitionGraphQLModule, DefinitionTypeOrmModule, CoreModule],
+  imports: [
+    DefinitionConfigModule,
+    DefinitionGraphQLModule,
+    DefinitionTypeOrmModule,
+    DefinitionRmqClientModule,
+    CoreModule,
+  ],
   providers: [],
 })
 export class OrdersModule implements NestModule {

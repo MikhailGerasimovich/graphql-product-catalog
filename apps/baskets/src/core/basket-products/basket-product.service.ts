@@ -17,16 +17,21 @@ export class BasketProductService {
     @InjectRepository(BasketProduct) private readonly basketProductRepository: Repository<BasketProduct>,
     @Inject(CONTEXT) private readonly context: ExecutionContext,
   ) {
+    if (!context) {
+      this.repository = basketProductRepository;
+      return;
+    }
     const entityManager = getTransactionFromContext(context);
     this.repository = this.getBasketProductRepo(entityManager);
   }
 
-  async create(basket: Basket, productId: number): Promise<BasketProduct> {
+  async create(basket: Basket, productId: number, productTitle: string): Promise<BasketProduct> {
     const createBasketProductInput = new CreateBasketProductInput();
     createBasketProductInput.basket = basket;
     createBasketProductInput.productId = productId;
+    createBasketProductInput.productTitle = productTitle;
     createBasketProductInput.productsPrice = 0;
-    createBasketProductInput.productsQuantity = 0;
+    createBasketProductInput.productQuantity = 0;
 
     const basketProductEntity = this.repository.create(createBasketProductInput);
     const basketProduct = await this.repository.save(basketProductEntity);

@@ -1,6 +1,9 @@
-import { Resolver, Query, Mutation, Args, ResolveField, Parent } from '@nestjs/graphql';
+import { Resolver, Query, Args, ResolveField, Parent } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+
+import { GetPayload, JwtAuthGuard, Payload } from '@app/common';
+
 import { OrderService } from './order.service';
-import { CreatePurchaseInput } from '../classes';
 import { Order } from './entities';
 
 @Resolver('Order')
@@ -13,13 +16,12 @@ export class OrderResolver {
     return order;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Query('findOrder')
-  async findOrder(): Promise<Order> {
-    return null;
+  async findOrder(@GetPayload() payload: Payload): Promise<Order> {
+    const order = await this.orderService.findOneByUserId(payload.sub);
+    return order;
   }
-
-  @Mutation('purchase')
-  async purchase(@Args('input') createPurchaseInput: CreatePurchaseInput) {}
 
   @ResolveField('user')
   async user(@Parent() order: Order): Promise<any> {

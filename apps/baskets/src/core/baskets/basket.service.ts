@@ -16,6 +16,8 @@ import {
   Payload,
   RequestTakeProductInfo,
   ResponseTakeProductInfo,
+  RequestPurchaseInfo,
+  ResponsePurchaseInfo,
   getTransactionFromContext,
   sendMessage,
 } from '@app/common';
@@ -24,6 +26,7 @@ import { Basket } from './entities';
 import { CreateBasketInput, PutProductInput, TakeProductInput } from './dto';
 import { RmqClientName } from '../../common';
 import { BasketProductService } from '../basket-products/basket-product.service';
+import { BasketProduct } from '../basket-products/entities';
 
 @Injectable({ scope: Scope.REQUEST })
 export class BasketService {
@@ -35,6 +38,10 @@ export class BasketService {
     @Inject(CONTEXT) private readonly context: ExecutionContext,
     private readonly basketProductService: BasketProductService,
   ) {
+    if (!context) {
+      this.repository = basketRepository;
+      return;
+    }
     const entityManager = getTransactionFromContext(context);
     this.repository = this.getBasketRepo(entityManager);
   }
@@ -48,13 +55,13 @@ export class BasketService {
   }
 
   async takeProduct(takeProductInput: TakeProductInput, payload: Payload): Promise<Basket> {
-    const reqTakeProductInfo = this.makeRequestTakeProductInfo(takeProductInput);
+    const reqTakeProductInfo = this.createRequestTakeProductInfo(takeProductInput);
     const resTakeProductInfo = await this.sendMessageToCotalog<ResponseTakeProductInfo>(
       Pattern.TakeProduct,
       reqTakeProductInfo,
     );
 
-    const { isAvailable, priductQuantity, productPrice, productId } = resTakeProductInfo;
+    const { isAvailable, priductQuantity, productPrice, productId, productTitle } = resTakeProductInfo;
 
     if (!isAvailable) {
       throw new BadRequestException(`You can't take this product, or this quantity of the product`);
@@ -67,12 +74,12 @@ export class BasketService {
     let basketProduct = basket.basketProducts.find((bp) => bp.productId == productId);
 
     if (!basketProduct) {
-      basketProduct = await this.basketProductService.create(basket, productId);
+      basketProduct = await this.basketProductService.create(basket, productId, productTitle);
       basket.basketProducts.push(basketProduct);
     }
 
-    basketProduct.productsQuantity += priductQuantity;
-    basketProduct.productsPrice = basketProduct.productsQuantity * productPrice;
+    basketProduct.productQuantity += priductQuantity;
+    basketProduct.productsPrice = basketProduct.productQuantity * productPrice;
 
     basket.totalPrice = basket.basketProducts.reduce((prev, bp) => (prev += bp.productsPrice), 0);
 
@@ -97,22 +104,49 @@ export class BasketService {
       throw new NotFoundException(`The product with this id was not found`);
     }
 
-    if (basketProduct.productsQuantity <= productQuantity) {
+    if (basketProduct.productQuantity <= productQuantity) {
       basket.totalPrice -= basketProduct.productsPrice;
       basket.basketProducts = basket.basketProducts.filter((bp) => bp.productId != productId);
       await this.basketProductService.delete(basketProduct.id);
       return await this.repository.save(basket);
     }
 
-    const putPrice = (basketProduct.productsPrice / basketProduct.productsQuantity) * productQuantity;
+    const putPrice = (basketProduct.productsPrice / basketProduct.productQuantity) * productQuantity;
     basket.totalPrice -= putPrice;
     basketProduct.productsPrice -= putPrice;
-    basketProduct.productsQuantity -= productQuantity;
+    basketProduct.productQuantity -= productQuantity;
     await this.basketProductService.save(basketProduct);
     return await this.repository.save(basket);
   }
 
-  private makeRequestTakeProductInfo(takeProductInput: TakeProductInput): RequestTakeProductInfo {
+  async toPurchase(reqPurchseInfo: RequestPurchaseInfo): Promise<ResponsePurchaseInfo> {
+    const { basketProductId, userId } = reqPurchseInfo;
+    const basket = await this.findOneByUserId(userId);
+
+    const basketProducts = basket.basketProducts.filter((bp) => basketProductId.includes(bp.id));
+
+    const resPurchaseInfo = this.createResponsePurchaseInfo(basketProducts);
+
+    //удалить купленные basketProduct
+    return resPurchaseInfo;
+  }
+
+  private createResponsePurchaseInfo(basketProducts: BasketProduct[]): ResponsePurchaseInfo {
+    const resPurchaseInfo = new ResponsePurchaseInfo();
+    resPurchaseInfo.currency = 'USD';
+    resPurchaseInfo.totalPrice = basketProducts.reduce((acc, bp) => acc + bp.productsPrice, 0);
+    basketProducts.forEach((bp) => {
+      resPurchaseInfo.products.push({
+        productId: bp.productId,
+        productQuantity: bp.productQuantity,
+        productsPrice: bp.productsPrice,
+        productTitle: bp.productTitle,
+      });
+    });
+    return resPurchaseInfo;
+  }
+
+  private createRequestTakeProductInfo(takeProductInput: TakeProductInput): RequestTakeProductInfo {
     const reqTakeProductInfo = new RequestTakeProductInfo();
     reqTakeProductInfo.productId = takeProductInput.productId;
     reqTakeProductInfo.productQuantity = takeProductInput.productQuantity || 1;

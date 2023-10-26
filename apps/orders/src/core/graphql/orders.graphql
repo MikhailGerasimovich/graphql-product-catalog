@@ -14,6 +14,10 @@ type OrderProduct @key(fields: "id") {
   product: Product
 }
 
+type Payment {
+  url: String!
+}
+
 extend type Product @key(fields: "id") {
   id: Int!
   orderProduct: OrderProduct
@@ -25,7 +29,8 @@ extend type User @key(fields: "id") {
 }
 
 input CreatePurchaseInput {
-  userId: Int!
+  basketProductId: [Int!]
+  # paymentSystem: String!
 }
 
 extend type Query {
@@ -34,5 +39,5 @@ extend type Query {
 }
 
 type Mutation {
-  purchase(input: CreatePurchaseInput): Order!
+  purchase(input: CreatePurchaseInput): Payment!
 }

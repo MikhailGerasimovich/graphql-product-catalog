@@ -8,9 +8,11 @@ import { BasketService } from './basket.service';
 import { BasketResolver } from './basket.resolver';
 import { UserResolver } from './user.resolver';
 import { BasketProductModule } from '../basket-products/basket-product.module';
+import { BasketController } from './basket.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Basket]), BasketProductModule],
   providers: [JwtStrategy, BasketService, BasketResolver, UserResolver],
+  controllers: [BasketController],
 })
 export class BasketModule {}

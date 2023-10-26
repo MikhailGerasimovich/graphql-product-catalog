@@ -13,7 +13,7 @@ export class OrderProduct extends BaseEntity {
   @Column({ type: 'integer' })
   productQuantity: number;
 
-  @Column({ type: 'timestamp', default: new Date() })
+  @Column({ type: 'text' })
   purchaseDate: string;
 
   @ManyToOne(() => Order, (order: Order) => order.orderProducts)
