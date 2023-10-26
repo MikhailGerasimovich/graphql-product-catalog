@@ -21,7 +21,7 @@ export class BasketResolver {
   }
 
   @Query(() => Basket)
-  async getBasket(@GetPayload() payload: Payload): Promise<Basket> {
+  async findBasket(@GetPayload() payload: Payload): Promise<Basket> {
     const basket = await this.basketsService.findOneByUserId(payload.sub);
     return basket;
   }

@@ -1,0 +1,42 @@
+type Order @key(fields: "id") {
+  id: Int!
+  userId: Int!
+  totalSpendMoney: Float!
+  orderProducts: [OrderProduct]
+  user: User
+}
+
+type OrderProduct @key(fields: "id") {
+  id: Int!
+  productId: Int!
+  productQuantity: Int!
+  purchaseDate: String!
+  product: Product
+}
+
+type Payment {
+  url: String!
+}
+
+extend type Product @key(fields: "id") {
+  id: Int!
+  orderProduct: OrderProduct
+}
+
+extend type User @key(fields: "id") {
+  id: Int
+  order: Order
+}
+
+input CreatePurchaseInput {
+  basketProductId: [Int!]
+}
+
+extend type Query {
+  findUserOrder(userId: Int!): Order!
+  findOrder: Order!
+}
+
+type Mutation {
+  purchase(input: CreatePurchaseInput): Payment!
+}

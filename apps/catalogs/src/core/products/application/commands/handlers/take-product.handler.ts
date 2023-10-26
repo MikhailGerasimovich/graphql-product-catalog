@@ -31,6 +31,7 @@ export class TakeProductHandler implements ICommandHandler<TakeProductCommand> {
     resTakeProduct.isAvailable = true;
     resTakeProduct.priductQuantity = productQuantity;
     resTakeProduct.productId = product.id;
+    resTakeProduct.productTitle = product.title;
     resTakeProduct.productPrice = product.price;
     return resTakeProduct;
   }
@@ -40,6 +41,7 @@ export class TakeProductHandler implements ICommandHandler<TakeProductCommand> {
     resTakeProduct.isAvailable = false;
     resTakeProduct.priductQuantity = 0;
     resTakeProduct.productId = productId;
+    resTakeProduct.productTitle = 'unavailable';
     resTakeProduct.productPrice = 0;
     return resTakeProduct;
   }
