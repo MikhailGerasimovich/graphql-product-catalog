@@ -1,11 +1,12 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ClassSerializerInterceptor, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { LoggerMiddleware, getEnvironmentFile } from '@app/common';
+import { AllExceptionFilter, LoggerMiddleware, WinstonLoggerModule, getEnvironmentFile } from '@app/common';
 
 import { CoreModule } from './core/core.module';
 import { User } from './core/baskets/entities';
@@ -73,7 +74,18 @@ const DefinitionRmqClientModule = ClientsModule.registerAsync({
     DefinitionGraphQLModule,
     DefinitionTypeOrmModule,
     DefinitionRmqClientModule,
+    WinstonLoggerModule,
     CoreModule,
+  ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionFilter,
+    },
   ],
 })
 export class BasketsModule implements NestModule {

@@ -1,14 +1,15 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ClassSerializerInterceptor, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
-import { AllExceptionFilter, LoggerMiddleware, getEnvironmentFile } from '@app/common';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo';
-import { CoreModule } from './core/core.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+
+import { AllExceptionFilter, LoggerMiddleware, WinstonLoggerModule, getEnvironmentFile } from '@app/common';
+
 import { RmqClientName } from './common';
+import { CoreModule } from './core/core.module';
 
 const envFilePath = `./apps/orders/${getEnvironmentFile(process.env.NODE_ENV)}`;
 const DefinitionConfigModule = ConfigModule.forRoot({
@@ -66,9 +67,20 @@ const DefinitionRmqClientModule = ClientsModule.registerAsync({
     DefinitionGraphQLModule,
     DefinitionTypeOrmModule,
     DefinitionRmqClientModule,
+    WinstonLoggerModule,
+
     CoreModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionFilter,
+    },
+  ],
 })
 export class OrdersModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

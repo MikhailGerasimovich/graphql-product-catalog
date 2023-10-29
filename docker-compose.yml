@@ -43,6 +43,7 @@ services:
       - 3001:3001
     networks:
       - dbnet
+      - auth_db
 
   baskets:
     build:
@@ -58,6 +59,7 @@ services:
       - 3002:3002
     networks:
       - dbnet
+      - basket_db
 
   catalogs:
     build:
@@ -73,6 +75,24 @@ services:
       - 3003:3003
     networks:
       - dbnet
+      - command_catalog_db
+      - query_catalog_db
+
+  orders:
+    build:
+      context: .
+      dockerfile: ./apps/orders/Dockerfile
+    command: npm run start:docker orders
+    env_file:
+      - ./apps/orders/.envDocker
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 3004:3004
+    networks:
+      - dbnet
+      - order_db
 
   auth_db:
     image: postgres:13.5
@@ -81,18 +101,12 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=957483
       - POSTGRES_DB=auth_db
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5434
-    expose:
-      - '5434'
+      - POSTGRES_HOST=auth_db
+      - POSTGRES_PORT=5432
     volumes:
-      - postgres:/var/lib/postgresql/data
-    ports:
-      - '5434:5434'
-    command:
-      - -p 5434
+      - auth:/var/lib/postgresql/data
     networks:
-      - dbnet
+      - auth_db
 
   basket_db:
     image: postgres:13.5
@@ -101,36 +115,26 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=957483
       - POSTGRES_DB=basket_db
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5435
-    expose:
-      - '5435'
+      - POSTGRES_HOST=basket_db
+      - POSTGRES_PORT=5432
     volumes:
-      - postgres:/var/lib/postgresql/data
-    ports:
-      - '5435:5435'
-    command:
-      - -p 5435
+      - basket:/var/lib/postgresql/data
     networks:
-      - dbnet
+      - basket_db
 
   command_catalog_db:
     image: postgres:13.5
     restart: always
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=957483
       - POSTGRES_DB=command_catalog_db
-      - POSTGRES_HOST=postgres
+      - POSTGRES_HOST=command_catalog_db
       - POSTGRES_PORT=5432
-    expose:
-      - '5432'
     volumes:
-      - postgres:/var/lib/postgresql/data
-    ports:
-      - '5432:5432'
+      - command_catalog:/var/lib/postgresql/data
     networks:
-      - dbnet
+      - command_catalog_db
 
   query_catalog_db:
     image: postgres:13.5
@@ -139,24 +143,41 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=957483
       - POSTGRES_DB=query_catalog_db
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=5433
-    expose:
-      - '5433'
+      - POSTGRES_HOST=query_catalog_db
+      - POSTGRES_PORT=5432
     volumes:
-      - postgres:/var/lib/postgresql/data
-    ports:
-      - '5433:5433'
-    command:
-      - -p 5433
+      - query_catalog:/var/lib/postgresql/data
     networks:
-      - dbnet
+      - query_catalog_db
+
+  order_db:
+    image: postgres:13.5
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=957483
+      - POSTGRES_DB=order_db
+      - POSTGRES_HOST=order_db
+      - POSTGRES_PORT=5432
+    volumes:
+      - order:/var/lib/postgresql/data
+    networks:
+      - order_db
 
 volumes:
-  postgres:
+  auth:
+  basket:
+  command_catalog:
+  query_catalog:
+  order:
 
 
 networks:
   dbnet:
+  auth_db:
+  basket_db:
+  command_catalog_db:
+  query_catalog_db:
+  order_db:
 
 
