@@ -4,10 +4,13 @@ PORT=3000
 
 #MICROSERVICES
 AUTH_NAME="authorization"
-AUTH_URL="http://localhost:3001/graphql"
+AUTH_URL="http://authorization:3001/graphql"
 
 CATALOGS_NAME="catalogs"
-CATALOGS_URL="http://localhost:3003/graphql"
+CATALOGS_URL="http://catalogs:3003/graphql"
 
 BASKETS_NAME="baskets"
-BASKETS_URL="http://localhost:3002/graphql"
+BASKETS_URL="http://baskets:3002/graphql"
+
+ORDERS_NAME="orders"
+ORDERS_URL="http://orders:3004/graphql"

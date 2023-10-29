@@ -11,7 +11,7 @@ CDB_NAME="command_catalog_db"
 
 #QUERY_DATABASE
 QDB_HOST="query_catalog_db"
-QDB_PORT=5433
+QDB_PORT=5432
 QDB_USERNAME="postgres"
 QDB_PASSWORD="957483"
 QDB_NAME="query_catalog_db"
