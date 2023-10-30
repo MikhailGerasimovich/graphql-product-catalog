@@ -1,4 +1,4 @@
-import { IntrospectAndCompose, RemoteGraphQLDataSource } from '@apollo/gateway';
+import { IntrospectAndCompose } from '@apollo/gateway';
 import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { ApolloGatewayDriver, ApolloGatewayDriverConfig } from '@nestjs/apollo';
@@ -7,7 +7,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 
 import { AllExceptionFilter, WinstonLoggerModule, getEnvironmentFile } from '@app/common';
 
-import { handleAuthContext } from './context/';
+import { GraphQLDataSource } from './configs';
 
 const envFilePath = `./apps/gateway/${getEnvironmentFile(process.env.NODE_ENV)}`;
 const DefinitionConfigModule = ConfigModule.forRoot({
@@ -19,8 +19,10 @@ const DefinitionGraphQLModule = GraphQLModule.forRootAsync<ApolloGatewayDriverCo
   imports: [ConfigModule],
   driver: ApolloGatewayDriver,
   useFactory: (config: ConfigService) => ({
-    server: {
-      context: handleAuthContext,
+    server: {},
+    cors: {
+      origin: true,
+      credentials: true,
     },
     gateway: {
       supergraphSdl: new IntrospectAndCompose({
@@ -44,14 +46,7 @@ const DefinitionGraphQLModule = GraphQLModule.forRootAsync<ApolloGatewayDriverCo
           },
         ],
       }),
-      buildService({ url }) {
-        return new RemoteGraphQLDataSource({
-          url,
-          willSendRequest({ request, context }) {
-            request.http.headers.set('authorization', context.authorization);
-          },
-        });
-      },
+      buildService: (args) => new GraphQLDataSource(args),
     },
   }),
   inject: [ConfigService],

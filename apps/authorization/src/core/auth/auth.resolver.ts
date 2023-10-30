@@ -1,8 +1,17 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { UseGuards, UseInterceptors } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
+import { Response } from 'express';
 
-import { GetPayload, GetTransaction, JwtAuthGuard, Payload, TransactionInterceptor } from '@app/common';
+import {
+  Cookie,
+  GetPayload,
+  GetTransaction,
+  JwtAuthGuard,
+  Payload,
+  TransactionInterceptor,
+  setCookie,
+} from '@app/common';
 
 import { User } from '../users/entities';
 import { AuthService } from './auth.service';
@@ -16,29 +25,38 @@ export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
   @UseInterceptors(TransactionInterceptor)
-  @Mutation(() => JwtResponse)
-  async signUp(@Args('input') input: SignUpInput, @GetTransaction() t: EntityManager): Promise<JwtResponse> {
+  @Mutation(() => JwtResponse, { nullable: true })
+  async signUp(
+    @Args('input') input: SignUpInput,
+    @GetTransaction() t: EntityManager,
+    @Context('res') res: Response,
+  ): Promise<void> {
     const jwts = await this.authService.signUp(input, t);
-    return jwts;
+    setCookie(res, Cookie.Auth, jwts);
   }
 
   @UseGuards(LocalAuthGuard)
-  @Mutation(() => JwtResponse)
-  async signIn(@Args('input') input: SignInInput, @GetPayload() user: User): Promise<JwtResponse> {
+  @Mutation(() => JwtResponse, { nullable: true })
+  async signIn(
+    @Args('input') input: SignInInput,
+    @GetPayload() user: User,
+    @Context('res') res: Response,
+  ): Promise<void> {
     const jwts = await this.authService.signIn(user);
-    return jwts;
+    setCookie(res, Cookie.Auth, jwts);
   }
 
   @UseInterceptors(TransactionInterceptor)
   @UseGuards(JwtAuthGuard)
-  @Mutation(() => JwtResponse)
+  @Mutation(() => JwtResponse, { nullable: true })
   async changePassword(
     @Args('input') input: ChangePasswordInput,
     @GetPayload() payload: Payload,
     @GetTransaction() t: EntityManager,
-  ): Promise<JwtResponse> {
+    @Context('res') res: Response,
+  ): Promise<void> {
     const jwts = await this.authService.changePassword(payload, input, t);
-    return jwts;
+    setCookie(res, Cookie.Auth, jwts);
   }
 
   @UseGuards(RefreshJwtsGuard)
@@ -49,13 +67,14 @@ export class AuthResolver {
   }
 
   @UseGuards(RefreshJwtsGuard)
-  @Mutation(() => JwtResponse)
+  @Mutation(() => JwtResponse, { nullable: true })
   async refreshTokens(
     @GetPayload() payload: Payload,
     @GetToken() refreshToken: string,
-  ): Promise<JwtResponse> {
+    @Context('res') res: Response,
+  ): Promise<void> {
     const jwts = await this.authService.refreshTokens(payload, refreshToken);
-    return jwts;
+    setCookie(res, Cookie.Auth, jwts);
   }
 
   @UseGuards(JwtAuthGuard)

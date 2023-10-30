@@ -4,6 +4,8 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 import { WinstonModule } from 'nest-winston';
 
+import * as cookieParser from 'cookie-parser';
+
 import { instance } from '@app/common';
 
 import { CatalogsModule } from './catalogs.module';
@@ -15,6 +17,12 @@ async function bootstrap() {
     }),
   });
   const config = app.get(ConfigService);
+
+  app.use(cookieParser());
+  app.enableCors({
+    origin: true,
+    credentials: true,
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
