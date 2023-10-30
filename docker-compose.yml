@@ -33,7 +33,7 @@ services:
     build:
       context: .
       dockerfile: ./apps/authorization/Dockerfile
-    command: npm run start:docker authorization
+    command: npm run migration:auth:run && npm run start:docker authorization
     env_file:
       - ./apps/authorization/.envDocker
     volumes:

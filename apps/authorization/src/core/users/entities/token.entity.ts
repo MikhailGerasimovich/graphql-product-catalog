@@ -2,7 +2,7 @@ import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 't
 
 import { User } from './user.entity';
 
-@Entity({ name: 'tokens', synchronize: true })
+@Entity({ name: 'tokens' })
 export class Token extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;

@@ -6,7 +6,7 @@ import { Token } from './token.entity';
 
 @ObjectType()
 @Directive('@key(fields: "id")')
-@Entity({ name: 'users', synchronize: true })
+@Entity({ name: 'users' })
 export class User extends BaseEntity {
   @Field(() => Int)
   @PrimaryGeneratedColumn()
