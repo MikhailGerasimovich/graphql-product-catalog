@@ -25,41 +25,38 @@ export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
   @UseInterceptors(TransactionInterceptor)
-  @Mutation(() => JwtResponse)
+  @Mutation(() => JwtResponse, { nullable: true })
   async signUp(
     @Args('input') input: SignUpInput,
     @GetTransaction() t: EntityManager,
     @Context('res') res: Response,
-  ): Promise<JwtResponse> {
+  ): Promise<void> {
     const jwts = await this.authService.signUp(input, t);
     setCookie(res, Cookie.Auth, jwts);
-    return jwts;
   }
 
   @UseGuards(LocalAuthGuard)
-  @Mutation(() => JwtResponse)
+  @Mutation(() => JwtResponse, { nullable: true })
   async signIn(
     @Args('input') input: SignInInput,
     @GetPayload() user: User,
     @Context('res') res: Response,
-  ): Promise<JwtResponse> {
+  ): Promise<void> {
     const jwts = await this.authService.signIn(user);
     setCookie(res, Cookie.Auth, jwts);
-    return jwts;
   }
 
   @UseInterceptors(TransactionInterceptor)
   @UseGuards(JwtAuthGuard)
-  @Mutation(() => JwtResponse)
+  @Mutation(() => JwtResponse, { nullable: true })
   async changePassword(
     @Args('input') input: ChangePasswordInput,
     @GetPayload() payload: Payload,
     @GetTransaction() t: EntityManager,
     @Context('res') res: Response,
-  ): Promise<JwtResponse> {
+  ): Promise<void> {
     const jwts = await this.authService.changePassword(payload, input, t);
     setCookie(res, Cookie.Auth, jwts);
-    return jwts;
   }
 
   @UseGuards(RefreshJwtsGuard)
@@ -70,15 +67,14 @@ export class AuthResolver {
   }
 
   @UseGuards(RefreshJwtsGuard)
-  @Mutation(() => JwtResponse)
+  @Mutation(() => JwtResponse, { nullable: true })
   async refreshTokens(
     @GetPayload() payload: Payload,
     @GetToken() refreshToken: string,
     @Context('res') res: Response,
-  ): Promise<JwtResponse> {
+  ): Promise<void> {
     const jwts = await this.authService.refreshTokens(payload, refreshToken);
     setCookie(res, Cookie.Auth, jwts);
-    return jwts;
   }
 
   @UseGuards(JwtAuthGuard)
