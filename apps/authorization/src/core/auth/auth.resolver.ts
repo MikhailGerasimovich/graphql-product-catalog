@@ -1,8 +1,17 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { UseGuards, UseInterceptors } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
+import { Response } from 'express';
 
-import { GetPayload, GetTransaction, JwtAuthGuard, Payload, TransactionInterceptor } from '@app/common';
+import {
+  Cookie,
+  GetPayload,
+  GetTransaction,
+  JwtAuthGuard,
+  Payload,
+  TransactionInterceptor,
+  setCookie,
+} from '@app/common';
 
 import { User } from '../users/entities';
 import { AuthService } from './auth.service';
@@ -17,15 +26,25 @@ export class AuthResolver {
 
   @UseInterceptors(TransactionInterceptor)
   @Mutation(() => JwtResponse)
-  async signUp(@Args('input') input: SignUpInput, @GetTransaction() t: EntityManager): Promise<JwtResponse> {
+  async signUp(
+    @Args('input') input: SignUpInput,
+    @GetTransaction() t: EntityManager,
+    @Context('res') res: Response,
+  ): Promise<JwtResponse> {
     const jwts = await this.authService.signUp(input, t);
+    setCookie(res, Cookie.Auth, jwts);
     return jwts;
   }
 
   @UseGuards(LocalAuthGuard)
   @Mutation(() => JwtResponse)
-  async signIn(@Args('input') input: SignInInput, @GetPayload() user: User): Promise<JwtResponse> {
+  async signIn(
+    @Args('input') input: SignInInput,
+    @GetPayload() user: User,
+    @Context('res') res: Response,
+  ): Promise<JwtResponse> {
     const jwts = await this.authService.signIn(user);
+    setCookie(res, Cookie.Auth, jwts);
     return jwts;
   }
 
@@ -36,8 +55,10 @@ export class AuthResolver {
     @Args('input') input: ChangePasswordInput,
     @GetPayload() payload: Payload,
     @GetTransaction() t: EntityManager,
+    @Context('res') res: Response,
   ): Promise<JwtResponse> {
     const jwts = await this.authService.changePassword(payload, input, t);
+    setCookie(res, Cookie.Auth, jwts);
     return jwts;
   }
 
@@ -53,8 +74,10 @@ export class AuthResolver {
   async refreshTokens(
     @GetPayload() payload: Payload,
     @GetToken() refreshToken: string,
+    @Context('res') res: Response,
   ): Promise<JwtResponse> {
     const jwts = await this.authService.refreshTokens(payload, refreshToken);
+    setCookie(res, Cookie.Auth, jwts);
     return jwts;
   }
 
