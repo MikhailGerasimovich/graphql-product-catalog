@@ -4,3 +4,4 @@ export * from './send-message';
 export * from './get-transaction-from-context';
 export * from './get-current-date-time-string';
 export * from './set-cookie';
+export * from './session-serializer';
