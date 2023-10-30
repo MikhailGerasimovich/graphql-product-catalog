@@ -1,5 +1,7 @@
 import { Resolver, Query, Args, ResolveReference } from '@nestjs/graphql';
-import { ParseIntPipe } from '@nestjs/common';
+import { ParseIntPipe, UseGuards } from '@nestjs/common';
+
+import { IsAuthenticatedGuard } from '@app/common';
 
 import { UserService } from './user.service';
 import { User } from './entities/user.entity';
@@ -9,6 +11,7 @@ import { FindUserInput } from './dto';
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
+  @UseGuards(IsAuthenticatedGuard)
   @Query(() => [User])
   async findAllUsers(@Args('input', { nullable: true }) findUserInput: FindUserInput): Promise<User[]> {
     const users = await this.userService.findAll(findUserInput);

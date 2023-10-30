@@ -11,6 +11,16 @@ export class LocalAuthGuard extends AuthGuard('local') {
     const { email, password } = input;
     gqlReq.body.email = email;
     gqlReq.body.password = password;
+
     return gqlReq;
+  }
+
+  async canActivate(context: ExecutionContext) {
+    const result = (await super.canActivate(context)) as boolean;
+
+    const request = context.getArgByIndex(2).req;
+
+    await super.logIn(request);
+    return result;
   }
 }
