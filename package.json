@@ -20,9 +20,11 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/graphql-product-catalog/test/jest-e2e.json",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli",
-    "migration:create": "npx typeorm migration:create ./apps/authorization/src/migrations/init-schema",
+    "migration:create": "npx typeorm migration:create ./apps/catalogs/src/migrations/init-command-schema",
     "migration:auth:run": "export NODE_ENV=docker && npm run typeorm -- --dataSource=apps/authorization/src/config/typeorm-cli.config.ts migration:run",
-    "migration:catalogs:run": "set NODE_ENV=development && npm run typeorm -- --dataSource=apps/catalogs/src/config/typeorm-cli.config.ts migration:run"
+    "migration:catalogs-command:run": "export NODE_ENV=development && npm run typeorm -- --dataSource=apps/catalogs/src/config/typeorm-command-cli.config.ts migration:run",
+    "migration:catalogs-query:run": "export NODE_ENV=development && npm run typeorm -- --dataSource=apps/catalogs/src/config/typeorm-query-cli.config.ts migration:run"
+
 
   },
   "dependencies": {

@@ -18,6 +18,6 @@ export default new DataSource({
   username: config.get('DB_USERNAME'),
   password: config.get('DB_PASSWORD'),
   database: config.get('DB_NAME'),
-  logging: config.get<boolean>('LOGGING'),
+  logging: config.get<boolean>('DB_LOGGING'),
   migrations: [InitSchema1698665310243],
 });
