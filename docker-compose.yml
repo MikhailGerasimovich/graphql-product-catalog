@@ -49,7 +49,7 @@ services:
     build:
       context: .
       dockerfile: ./apps/baskets/Dockerfile
-    command: npm run start:docker baskets
+    command: npm run migration:baskets:run && npm run start:docker baskets
     env_file:
       - ./apps/baskets/.envDocker
     volumes:
@@ -65,7 +65,7 @@ services:
     build:
       context: .
       dockerfile: ./apps/catalogs/Dockerfile
-    command: npm run start:docker catalogs
+    command: npm run migration:catalogs-command:run && npm run migration:catalogs-query:run && npm run start:docker catalogs
     env_file:
       - ./apps/catalogs/.envDocker
     volumes:
@@ -82,7 +82,7 @@ services:
     build:
       context: .
       dockerfile: ./apps/orders/Dockerfile
-    command: npm run start:docker orders
+    command: npm run migration:orders:run && npm run start:docker orders
     env_file:
       - ./apps/orders/.envDocker
     volumes:

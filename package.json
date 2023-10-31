@@ -20,12 +20,16 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/graphql-product-catalog/test/jest-e2e.json",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli",
-    "migration:create": "npx typeorm migration:create ./apps/orders/src/migrations/init-schema",
+    "migration:auth:create": "npx typeorm migration:create ./apps/authorization/src/migrations/init-schema",
+    "migration:catalogs-command:create": "npx typeorm migration:create ./apps/catalogs/src/migrations/init-command-schema",
+    "migration:catalogs-query:create": "npx typeorm migration:create ./apps/catalogs/src/migrations/init-query-schema",
+    "migration:baskets:create": "npx typeorm migration:create ./apps/baskets/src/migrations/init-schema",
+    "migration:orders:create": "npx typeorm migration:create ./apps/orders/src/migrations/init-schema",
     "migration:auth:run": "export NODE_ENV=docker && npm run typeorm -- --dataSource=apps/authorization/src/config/typeorm-cli.config.ts migration:run",
-    "migration:catalogs-command:run": "export NODE_ENV=development && npm run typeorm -- --dataSource=apps/catalogs/src/config/typeorm-command-cli.config.ts migration:run",
-    "migration:catalogs-query:run": "export NODE_ENV=development && npm run typeorm -- --dataSource=apps/catalogs/src/config/typeorm-query-cli.config.ts migration:run",
-    "migration:baskets:run": "export NODE_ENV=development && npm run typeorm -- --dataSource=apps/baskets/src/config/typeorm-cli.config.ts migration:run",
-    "migration:orders:run": "export NODE_ENV=development && npm run typeorm -- --dataSource=apps/orders/src/config/typeorm-cli.config.ts migration:run"
+    "migration:catalogs-command:run": "export NODE_ENV=docker && npm run typeorm -- --dataSource=apps/catalogs/src/config/typeorm-command-cli.config.ts migration:run",
+    "migration:catalogs-query:run": "export NODE_ENV=docker && npm run typeorm -- --dataSource=apps/catalogs/src/config/typeorm-query-cli.config.ts migration:run",
+    "migration:baskets:run": "export NODE_ENV=docker && npm run typeorm -- --dataSource=apps/baskets/src/config/typeorm-cli.config.ts migration:run",
+    "migration:orders:run": "export NODE_ENV=docker && npm run typeorm -- --dataSource=apps/orders/src/config/typeorm-cli.config.ts migration:run"
   },
   "dependencies": {
     "@apollo/gateway": "^2.5.5",
