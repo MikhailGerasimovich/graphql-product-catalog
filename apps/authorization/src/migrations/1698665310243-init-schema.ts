@@ -1,4 +1,31 @@
-import { MigrationInterface, QueryRunner, Table, TableColumn, TableForeignKey } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableColumn, TableForeignKey, getRepository } from 'typeorm';
+
+const usersSeeds = [
+  {
+    id: 1,
+    username: 'admin',
+    email: 'admin@mail.ru',
+    password: '$2b$10$.bCSXs1DDjvy4C5BEZ3jZuQpsIFuBixREx607QNLNFpM7BBqswore',
+    passwordSalt: '$2b$10$.bCSXs1DDjvy4C5BEZ3jZu',
+    role: 'ADMIN',
+  },
+  {
+    id: 2,
+    username: 'manager',
+    email: 'manager@mail.ru',
+    password: '$2b$10$IXhEBNxCDy.t9q8yGMe/qO0tq0PwKmsnWIuJwvK9sYGULBx6vp.E.',
+    passwordSalt: '$2b$10$IXhEBNxCDy.t9q8yGMe/qO',
+    role: 'MANAGER',
+  },
+  {
+    id: 3,
+    username: 'user',
+    email: 'user@mail.ru',
+    password: '$2b$10$UgCpQj7RFEl0xCN2rn8Vf.eLBrMiJezPv0DuF1t2i3XDgqGKlZo2m',
+    passwordSalt: '$2b$10$UgCpQj7RFEl0xCN2rn8Vf.',
+    role: 'USER',
+  },
+];
 
 export class InitSchema1698665310243 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -86,6 +113,14 @@ export class InitSchema1698665310243 implements MigrationInterface {
         onDelete: 'CASCADE',
       }),
     );
+
+    await queryRunner.query(`INSERT INTO "users" ("username", "email", "password", "passwordSalt", "role")
+      VALUES ${usersSeeds
+        .map(
+          (user) =>
+            `('${user.username}', '${user.email}', '${user.password}', '${user.passwordSalt}', '${user.role}')`,
+        )
+        .join(',')}`);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

@@ -13,23 +13,23 @@ export class User extends BaseEntity {
   id: number;
 
   @Field()
-  @Column({ type: 'text' })
+  @Column({ type: 'varchar' })
   username: string;
 
   @Field()
-  @Column({ type: 'text', unique: true })
+  @Column({ type: 'varchar', unique: true })
   email: string;
 
   @Exclude()
-  @Column({ type: 'text' })
+  @Column({ type: 'varchar' })
   password: string;
 
   @Exclude()
-  @Column({ type: 'text' })
+  @Column({ type: 'varchar' })
   passwordSalt: string;
 
   @Field()
-  @Column({ type: 'text' })
+  @Column({ type: 'varchar' })
   role: string;
 
   @OneToMany(() => Token, (token: Token) => token.user)

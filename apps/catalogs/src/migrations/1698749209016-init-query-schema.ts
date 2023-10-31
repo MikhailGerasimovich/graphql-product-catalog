@@ -1,5 +1,29 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
+const productsSeeds = [
+  {
+    id: 1,
+    title: 'Tesla Model Y 2023',
+    price: 60000,
+    currency: 'USD',
+    inStock: true,
+  },
+  {
+    id: 2,
+    title: 'IPhone 13 2023 128GB',
+    price: 1500,
+    currency: 'USD',
+    inStock: true,
+  },
+  {
+    id: 3,
+    title: 'Sony PlayStation 5',
+    price: 3000,
+    currency: 'USD',
+    inStock: true,
+  },
+];
+
 export class InitQuerySchema1698749209016 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
@@ -37,6 +61,11 @@ export class InitQuerySchema1698749209016 implements MigrationInterface {
         ],
       }),
     );
+
+    await queryRunner.query(`INSERT INTO "products" ("title", "price", "currency", "inStock")
+    VALUES ${productsSeeds
+      .map((product) => `('${product.title}', ${product.price}, '${product.currency}', ${product.inStock})`)
+      .join(',')}`);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

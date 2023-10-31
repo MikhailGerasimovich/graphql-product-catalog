@@ -6,13 +6,13 @@ export class QueryProduct extends Product {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'text', nullable: false })
+  @Column({ type: 'varchar', nullable: false })
   title: string;
 
   @Column({ type: 'real' })
   price: number;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'varchar' })
   currency: string;
 
   @Column({ type: 'boolean' })

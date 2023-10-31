@@ -7,7 +7,7 @@ export class Token extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'varchar' })
   refreshToken: string;
 
   @Column({ type: 'timestamp' })

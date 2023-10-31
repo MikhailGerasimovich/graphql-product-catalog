@@ -23,7 +23,7 @@ export class BasketProduct {
   @Column({ type: 'integer' })
   productId: number;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'varchar' })
   productTitle: string;
 
   @ManyToOne(() => Basket, (basket: Basket) => basket.basketProducts)
