@@ -6,7 +6,7 @@ import { User } from './user.entity';
 
 @ObjectType()
 @Directive('@key(fields: "id")')
-@Entity('baskets', { synchronize: true })
+@Entity('baskets')
 export class Basket {
   @Field(() => Int)
   @PrimaryGeneratedColumn()

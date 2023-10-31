@@ -5,7 +5,7 @@ import { Product } from './product.entity';
 
 @ObjectType()
 @Directive('@key(fields: "id")')
-@Entity('basket_products', { synchronize: true })
+@Entity('basket_products')
 export class BasketProduct {
   @Field(() => Int)
   @PrimaryGeneratedColumn()
@@ -16,7 +16,7 @@ export class BasketProduct {
   productsPrice: number;
 
   @Field(() => Float)
-  @Column({ type: 'real' })
+  @Column({ type: 'integer' })
   productQuantity: number;
 
   @Field(() => Int)
