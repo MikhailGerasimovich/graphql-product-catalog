@@ -11,8 +11,6 @@ dotenv.config({ path: envFilePath });
 
 const config = new ConfigService();
 
-console.log(envFilePath);
-
 export default new DataSource({
   type: 'postgres',
   host: config.get('CDB_HOST'),
