@@ -11,6 +11,7 @@ export class RedisService {
   }
 
   async set(key: string, value: any, ttl?: number) {
+    if (!value) return;
     await this.cache.set(key, value, ttl);
   }
 

@@ -1,27 +1,43 @@
 import { Resolver, Query, Args, ResolveField, Parent } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 
-import { GetPayload, JwtAuthGuard, Payload, Role, Roles, RolesGuard } from '@app/common';
+import { GetPayload, JwtAuthGuard, Payload, RedisService, Role, Roles, RolesGuard } from '@app/common';
 
 import { OrderService } from './order.service';
 import { Order } from './entities';
+import { getOrderCacheKey } from '../../common';
 
 @UseGuards(JwtAuthGuard)
 @Resolver('Order')
 export class OrderResolver {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(
+    private readonly orderService: OrderService,
+    private readonly cache: RedisService,
+  ) {}
 
   @Roles(Role.ADMIN)
   @UseGuards(RolesGuard)
   @Query('findUserOrder')
   async findUserOrder(@Args('input') userId: number): Promise<Order> {
+    const key = getOrderCacheKey(userId);
+    const fromCache = await this.cache.get(key);
+    if (fromCache) {
+      return fromCache;
+    }
     const order = await this.orderService.findOneByUserId(userId);
+    await this.cache.set(key, order);
     return order;
   }
 
   @Query('findOrder')
   async findOrder(@GetPayload() payload: Payload): Promise<Order> {
+    const key = getOrderCacheKey(payload.sub);
+    const fromCache = await this.cache.get(key);
+    if (fromCache) {
+      return fromCache;
+    }
     const order = await this.orderService.findOneByUserId(payload.sub);
+    await this.cache.set(key, order);
     return order;
   }
 

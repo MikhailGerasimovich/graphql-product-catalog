@@ -4,10 +4,8 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install
-
 COPY . . 
 
-RUN npm run build gateway
+RUN npm install
 
-CMD ["npm", "run", "start", "gateway"]
+RUN npm run build gateway

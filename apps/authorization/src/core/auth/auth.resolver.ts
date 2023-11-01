@@ -9,6 +9,7 @@ import {
   GetTransaction,
   JwtAuthGuard,
   Payload,
+  RedisService,
   TransactionInterceptor,
   setCookie,
 } from '@app/common';
@@ -19,24 +20,29 @@ import { ChangePasswordInput, SignInInput, SignUpInput } from './dto';
 import { JwtResponse } from './response';
 import { LocalAuthGuard, RefreshJwtsGuard } from './guards';
 import { GetToken } from './decorators';
+import { getUserCacheKey } from '../../common';
 
 @Resolver(() => JwtResponse)
 export class AuthResolver {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly cache: RedisService,
+  ) {}
 
   @UseInterceptors(TransactionInterceptor)
-  @Mutation(() => JwtResponse, { nullable: true })
+  @Mutation(() => Boolean, { nullable: true })
   async signUp(
     @Args('input') input: SignUpInput,
     @GetTransaction() t: EntityManager,
     @Context('res') res: Response,
   ): Promise<void> {
+    await this.cache.del(getUserCacheKey());
     const jwts = await this.authService.signUp(input, t);
     setCookie(res, Cookie.Auth, jwts);
   }
 
   @UseGuards(LocalAuthGuard)
-  @Mutation(() => JwtResponse, { nullable: true })
+  @Mutation(() => Boolean, { nullable: true })
   async signIn(
     @Args('input') input: SignInInput,
     @GetPayload() user: User,
@@ -48,26 +54,31 @@ export class AuthResolver {
 
   @UseInterceptors(TransactionInterceptor)
   @UseGuards(JwtAuthGuard)
-  @Mutation(() => JwtResponse, { nullable: true })
+  @Mutation(() => Boolean, { nullable: true })
   async changePassword(
     @Args('input') input: ChangePasswordInput,
     @GetPayload() payload: Payload,
     @GetTransaction() t: EntityManager,
     @Context('res') res: Response,
   ): Promise<void> {
+    await this.cache.del(getUserCacheKey(payload.sub));
     const jwts = await this.authService.changePassword(payload, input, t);
     setCookie(res, Cookie.Auth, jwts);
   }
 
   @UseGuards(RefreshJwtsGuard)
-  @Mutation(() => Boolean)
-  async logout(@GetPayload() payload: Payload, @GetToken() refreshToken: string): Promise<boolean> {
+  @Mutation(() => Boolean, { nullable: true })
+  async logout(
+    @GetPayload() payload: Payload,
+    @GetToken() refreshToken: string,
+    @Context('res') res: Response,
+  ): Promise<void> {
     await this.authService.logout(payload, refreshToken);
-    return true;
+    setCookie(res, Cookie.Auth, null);
   }
 
   @UseGuards(RefreshJwtsGuard)
-  @Mutation(() => JwtResponse, { nullable: true })
+  @Mutation(() => Boolean, { nullable: true })
   async refreshTokens(
     @GetPayload() payload: Payload,
     @GetToken() refreshToken: string,
@@ -78,9 +89,8 @@ export class AuthResolver {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Mutation(() => Boolean)
-  async logoutFromAllDevices(@GetPayload() payload: Payload): Promise<boolean> {
+  @Mutation(() => Boolean, { nullable: true })
+  async logoutFromAllDevices(@GetPayload() payload: Payload): Promise<void> {
     await this.authService.logoutFromAllDevices(payload);
-    return true;
   }
 }

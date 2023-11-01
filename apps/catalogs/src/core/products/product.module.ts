@@ -16,7 +16,7 @@ import {
   TakeProductHandler,
   UpdateProductHandler,
 } from './application';
-import { JwtStrategy } from '@app/common';
+import { JwtStrategy, RedisModule } from '@app/common';
 
 const CommandHandlers = [
   CreateProductHandler,
@@ -30,6 +30,7 @@ const QueryHandlers = [FindAllProductsHandler, FindOneProductHandler];
 @Module({
   imports: [
     CqrsModule,
+    RedisModule,
     TypeOrmModule.forFeature([CommandProduct], ConnectionName.Command),
     TypeOrmModule.forFeature([QueryProduct], ConnectionName.Query),
   ],

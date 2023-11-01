@@ -33,7 +33,7 @@ services:
     build:
       context: .
       dockerfile: ./apps/authorization/Dockerfile
-    command: npm run start:docker authorization
+    command: npm run auth:docker
     env_file:
       - ./apps/authorization/.envDocker
     volumes:
@@ -49,7 +49,7 @@ services:
     build:
       context: .
       dockerfile: ./apps/baskets/Dockerfile
-    command: npm run start:docker baskets
+    command: npm run basket:docker
     env_file:
       - ./apps/baskets/.envDocker
     volumes:
@@ -65,7 +65,7 @@ services:
     build:
       context: .
       dockerfile: ./apps/catalogs/Dockerfile
-    command: npm run start:docker catalogs
+    command: npm run catalog:docker
     env_file:
       - ./apps/catalogs/.envDocker
     volumes:
@@ -82,7 +82,7 @@ services:
     build:
       context: .
       dockerfile: ./apps/orders/Dockerfile
-    command: npm run start:docker orders
+    command: npm run order:docker
     env_file:
       - ./apps/orders/.envDocker
     volumes:
@@ -166,18 +166,18 @@ services:
 
 volumes:
   auth:
-  basket:
   command_catalog:
   query_catalog:
+  basket:
   order:
 
 
 networks:
   dbnet:
-  auth_db:
-  basket_db:
   command_catalog_db:
   query_catalog_db:
+  auth_db:
+  basket_db:
   order_db:
 
 

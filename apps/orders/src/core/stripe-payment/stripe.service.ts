@@ -26,7 +26,7 @@ export class StripeService {
             product_data: {
               name: product.productTitle,
             },
-            unit_amount: product.productsPrice * 100,
+            unit_amount: (product.productsPrice / product.productQuantity) * 100,
           },
           quantity: product.productQuantity,
         };

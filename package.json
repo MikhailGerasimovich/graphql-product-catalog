@@ -29,7 +29,11 @@
     "migration:catalogs-command:run": "export NODE_ENV=docker && npm run typeorm -- --dataSource=apps/catalogs/src/config/typeorm-command-cli.config.ts migration:run",
     "migration:catalogs-query:run": "export NODE_ENV=docker && npm run typeorm -- --dataSource=apps/catalogs/src/config/typeorm-query-cli.config.ts migration:run",
     "migration:baskets:run": "export NODE_ENV=docker && npm run typeorm -- --dataSource=apps/baskets/src/config/typeorm-cli.config.ts migration:run",
-    "migration:orders:run": "export NODE_ENV=docker && npm run typeorm -- --dataSource=apps/orders/src/config/typeorm-cli.config.ts migration:run"
+    "migration:orders:run": "export NODE_ENV=docker && npm run typeorm -- --dataSource=apps/orders/src/config/typeorm-cli.config.ts migration:run",
+    "auth:docker": "npm run migration:auth:run; npm run start:docker authorization",
+    "catalog:docker": "npm run migration:catalogs-command:run; npm run migration:catalogs-query:run; npm run start:docker catalogs",
+    "basket:docker": "npm run migration:baskets:run; npm run start:docker baskets",
+    "order:docker": "npm run migration:orders:run; npm run start:docker orders"
   },
   "dependencies": {
     "@apollo/gateway": "^2.5.5",

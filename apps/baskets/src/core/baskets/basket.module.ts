@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { JwtStrategy } from '@app/common';
+import { JwtStrategy, RedisModule } from '@app/common';
 
 import { Basket } from './entities';
 import { BasketService } from './basket.service';
@@ -11,7 +11,7 @@ import { BasketProductModule } from '../basket-products/basket-product.module';
 import { BasketController } from './basket.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Basket]), BasketProductModule],
+  imports: [TypeOrmModule.forFeature([Basket]), BasketProductModule, RedisModule],
   providers: [JwtStrategy, BasketService, BasketResolver, UserResolver],
   controllers: [BasketController],
 })

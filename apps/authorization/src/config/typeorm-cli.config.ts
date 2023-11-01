@@ -4,8 +4,6 @@ import { DataSource } from 'typeorm';
 
 import { getEnvironmentFile } from '@app/common';
 
-import { InitSchema1698665310243 } from '../migrations';
-
 const envFilePath = `./apps/authorization/${getEnvironmentFile(process.env.NODE_ENV)}`;
 dotenv.config({ path: envFilePath });
 
@@ -19,5 +17,5 @@ export default new DataSource({
   password: config.get('DB_PASSWORD'),
   database: config.get('DB_NAME'),
   logging: config.get<boolean>('DB_LOGGING'),
-  migrations: [InitSchema1698665310243],
+  migrations: ['./apps/authorization/src/migrations/*.ts'],
 });
