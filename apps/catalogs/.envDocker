@@ -8,6 +8,9 @@ CDB_PORT=5432
 CDB_USERNAME="postgres"
 CDB_PASSWORD="957483"
 CDB_NAME="command_catalog_db"
+CDB_LOGGING=true
+CDB_SYNCHRONIZE=false
+CDB_AUTO_LOAD_ENTITIES=true
 
 #QUERY_DATABASE
 QDB_HOST="query_catalog_db"
@@ -15,6 +18,15 @@ QDB_PORT=5432
 QDB_USERNAME="postgres"
 QDB_PASSWORD="957483"
 QDB_NAME="query_catalog_db"
+QDB_LOGGING=true
+QDB_SYNCHRONIZE=false
+QDB_AUTO_LOAD_ENTITIES=true
+
+#JWT
+ACCESS_SECRET="jwtaccesssecret"
+
+#SESSION
+SESSION_SECRET="sessionsecret"
 
 #RABBITMQ
 RMQ_URL="amqp://rabbitmq:5672"

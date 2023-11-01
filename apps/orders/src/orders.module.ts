@@ -32,9 +32,9 @@ const DefinitionTypeOrmModule = TypeOrmModule.forRootAsync({
     username: config.get('DB_USERNAME'),
     password: config.get('DB_PASSWORD'),
     database: config.get('DB_NAME'),
-    synchronize: true,
-    autoLoadEntities: true,
-    logging: true,
+    synchronize: config.get<boolean>('DB_SYNCHRONIZE'),
+    autoLoadEntities: config.get<boolean>('DB_AUTO_LOAD_ENTITIES'),
+    logging: config.get<boolean>('DB_LOGGING'),
   }),
 });
 

@@ -1,6 +1,10 @@
 import { ENV } from './env.constants';
 
 export function getEnvironmentFile(env: string) {
+  if (!env) {
+    return '.envDocker';
+  }
+
   switch (env.trim()) {
     case ENV.DEV:
       return '.env';

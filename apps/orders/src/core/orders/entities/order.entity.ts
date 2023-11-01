@@ -2,7 +2,7 @@ import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 't
 
 import { OrderProduct } from '../../order-products/entities';
 
-@Entity('orders', { synchronize: true })
+@Entity('orders')
 export class Order extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
