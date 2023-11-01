@@ -1,9 +1,12 @@
 import { Args, Mutation, Query, ResolveReference, Resolver } from '@nestjs/graphql';
-import { ParseIntPipe } from '@nestjs/common';
+import { ParseIntPipe, UseGuards } from '@nestjs/common';
 
 import { Product } from '../domain';
 import { CreateProductInput, FindProductInput, ProductService, UpdateProductInput } from '../application';
 
+import { JwtAuthGuard, Role, Roles, RolesGuard } from '@app/common';
+
+@UseGuards(JwtAuthGuard)
 @Resolver(() => Product)
 export class ProductResolver {
   constructor(private readonly productService: ProductService) {}
@@ -20,12 +23,16 @@ export class ProductResolver {
     return product;
   }
 
+  @Roles(Role.MANAGER, Role.ADMIN)
+  @UseGuards(RolesGuard)
   @Mutation(() => Product)
   async createProduct(@Args('input') createProductInput: CreateProductInput) {
     const product = await this.productService.create(createProductInput);
     return product;
   }
 
+  @Roles(Role.MANAGER, Role.ADMIN)
+  @UseGuards(RolesGuard)
   @Mutation(() => Product)
   async updateProduct(
     @Args('id', ParseIntPipe) id: number,
@@ -35,6 +42,8 @@ export class ProductResolver {
     return product;
   }
 
+  @Roles(Role.MANAGER, Role.ADMIN)
+  @UseGuards(RolesGuard)
   @Mutation(() => Boolean)
   async deleteProduct(@Args('id', ParseIntPipe) id: number) {
     return await this.productService.delete(id);

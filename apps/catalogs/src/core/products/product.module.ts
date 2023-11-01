@@ -16,6 +16,7 @@ import {
   TakeProductHandler,
   UpdateProductHandler,
 } from './application';
+import { JwtStrategy } from '@app/common';
 
 const CommandHandlers = [
   CreateProductHandler,
@@ -33,6 +34,7 @@ const QueryHandlers = [FindAllProductsHandler, FindOneProductHandler];
     TypeOrmModule.forFeature([QueryProduct], ConnectionName.Query),
   ],
   providers: [
+    JwtStrategy,
     CommandProductRepository,
     QueryProductRepository,
     ...CommandHandlers,
