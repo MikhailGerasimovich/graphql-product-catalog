@@ -21,9 +21,6 @@ services:
     command: npm run start:docker gateway
     env_file:
       - ./apps/gateway/.envDocker
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
     ports:
       - 3000:3000
     networks:
@@ -36,9 +33,6 @@ services:
     command: npm run auth:docker
     env_file:
       - ./apps/authorization/.envDocker
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
     ports:
       - 3001:3001
     networks:
@@ -52,9 +46,6 @@ services:
     command: npm run basket:docker
     env_file:
       - ./apps/baskets/.envDocker
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
     ports:
       - 3002:3002
     networks:
@@ -68,9 +59,6 @@ services:
     command: npm run catalog:docker
     env_file:
       - ./apps/catalogs/.envDocker
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
     ports:
       - 3003:3003
     networks:
@@ -85,9 +73,6 @@ services:
     command: npm run order:docker
     env_file:
       - ./apps/orders/.envDocker
-    volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
     ports:
       - 3004:3004
     networks:
@@ -179,5 +164,3 @@ networks:
   auth_db:
   basket_db:
   order_db:
-
-

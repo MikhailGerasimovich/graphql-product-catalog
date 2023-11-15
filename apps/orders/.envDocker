@@ -26,3 +26,7 @@ CANCEL_URL="http://localhost:4000/cansel"
 
 #JWT
 ACCESS_SECRET="jwtaccesssecret"
+
+#REDIS-CACHE
+REDIS_HOST="redis"
+REDIS_PORT=6379

@@ -18,9 +18,8 @@ RMQ_QUEUE_BASKETS="baskets_queue"
 RMQ_QUEUE_CATALOGS="catalogs_queue"
 
 #REDIS-CACHE
-REDIS_HOST="localhost"
+REDIS_HOST="redis"
 REDIS_PORT=6379
-REDIS_TTL=2000
 
 #JWT
 ACCESS_SECRET="jwtaccesssecret"
